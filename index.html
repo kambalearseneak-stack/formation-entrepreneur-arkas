@@ -14,6 +14,44 @@
 </head>
 <body>
 
+    <!-- ============================================ -->
+    <!-- ÉCRAN DE CONNEXION PLEIN ÉCRAN (au chargement) -->
+    <!-- ============================================ -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-box">
+            <div class="login-logo">
+                <i class="fa-solid fa-rocket"></i>
+                <h1>ARKAS</h1>
+                <p>Plateforme d'accompagnement entrepreneurial</p>
+            </div>
+
+            <div class="login-tabs">
+                <button id="tab-login" class="login-tab active" onclick="switchLoginTab('login')">
+                    Connexion
+                </button>
+                <button id="tab-signup" class="login-tab" onclick="switchLoginTab('signup')">
+                    Inscription
+                </button>
+            </div>
+
+            <div class="login-form">
+                <input type="email" id="overlay-email" placeholder="Votre email..." autocomplete="email">
+                <input type="password" id="overlay-password" placeholder="Mot de passe (min. 6 caractères)..." autocomplete="current-password">
+                
+                <button id="overlay-submit" class="btn-primary btn-full" onclick="handleOverlaySubmit()">
+                    <i class="fa-solid fa-right-to-bracket"></i> Se connecter
+                </button>
+                
+                <p id="overlay-message" class="overlay-message"></p>
+            </div>
+
+            <p class="login-footer">
+                <i class="fa-solid fa-shield-halved"></i> Vos données sont sécurisées
+            </p>
+        </div>
+    </div>
+
+    <!-- Barre d'authentification (affichage utilisateur connecté) -->
     <header class="top-auth-bar">
         <div class="brand-logo">
             <i class="fa-solid fa-rocket"></i> <span>ARKAS</span>
@@ -21,6 +59,7 @@
         <div id="auth-container" class="auth-wrapper"></div>
     </header>
 
+    <!-- Navigation -->
     <nav class="main-nav">
         <button class="nav-btn active" data-tab="home"><i class="fa-solid fa-house"></i> Accueil</button>
         <button class="nav-btn" data-tab="formations"><i class="fa-solid fa-book-open"></i> Formations</button>
@@ -30,6 +69,7 @@
         <button class="nav-btn" data-tab="carnet"><i class="fa-solid fa-pen-to-square"></i> Carnet</button>
     </nav>
 
+    <!-- Contenu -->
     <main class="app-container">
 
         <!-- ACCUEIL -->
@@ -37,33 +77,7 @@
             <div class="hero-card">
                 <h1>Bienvenue sur Arkas</h1>
                 <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux.</p>
-                <div class="hero-actions">
-                    <button class="btn-hero-primary" onclick="scrollToAuth()">
-                        <i class="fa-solid fa-user-plus"></i> Créer un compte
-                    </button>
-                    <button class="btn-hero-secondary" onclick="scrollToAuth()">
-                        <i class="fa-solid fa-right-to-bracket"></i> Se connecter
-                    </button>
-                </div>
             </div>
-
-            <div id="auth-section-home" class="auth-section-home">
-                <h2><i class="fa-solid fa-user-plus"></i> Rejoignez Arkas</h2>
-                <p class="section-desc">Créez votre compte gratuit pour sauvegarder vos réflexions et progresser.</p>
-                <div class="auth-form-home">
-                    <input type="email" id="home-email" placeholder="Votre email...">
-                    <input type="password" id="home-password" placeholder="Mot de passe (min. 6 caractères)...">
-                    <div class="auth-buttons-home">
-                        <button class="btn-primary" onclick="handleSignupFromHome()">
-                            <i class="fa-solid fa-user-plus"></i> S'inscrire
-                        </button>
-                        <button class="btn-save" onclick="handleLoginFromHome()">
-                            <i class="fa-solid fa-right-to-bracket"></i> Se connecter
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <div class="cards-grid">
                 <div class="action-card" onclick="switchTab('formations')">
                     <i class="fa-solid fa-graduation-cap"></i>
