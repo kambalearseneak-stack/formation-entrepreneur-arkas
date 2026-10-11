@@ -131,6 +131,22 @@ body {
 h2 {
     font-size: 20px;
     margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.badge-ai {
+    background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .section-desc {
@@ -150,6 +166,95 @@ h2 {
 
 .hero-card h1 { font-size: 26px; margin-bottom: 8px; }
 .hero-card p { color: var(--text-muted); font-size: 14px; }
+
+.hero-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-hero-primary, .btn-hero-secondary {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.btn-hero-primary {
+    background-color: white;
+    color: var(--bg-main);
+}
+
+.btn-hero-primary:hover {
+    transform: translateY(-2px);
+    background-color: #e2e8f0;
+}
+
+.btn-hero-secondary {
+    background-color: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+}
+
+.btn-hero-secondary:hover {
+    border-color: white;
+    transform: translateY(-2px);
+}
+
+/* Section d'inscription accueil */
+.auth-section-home {
+    background-color: var(--bg-card);
+    border: 2px solid var(--accent);
+    border-radius: 14px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.auth-section-home h2 {
+    color: var(--accent);
+    font-size: 22px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auth-form-home {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.auth-form-home input {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-size: 14px;
+    width: 100%;
+}
+
+.auth-buttons-home {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.auth-buttons-home button {
+    flex: 1;
+    min-width: 140px;
+    padding: 12px;
+    font-size: 14px;
+}
 
 /* Cartes */
 .cards-grid, .resources-grid, .notes-grid {
@@ -266,7 +371,7 @@ h2 {
     background-color: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 12px;
-    height: 450px;
+    height: 500px;
     display: flex;
     flex-direction: column;
     margin-top: 15px;
@@ -288,7 +393,8 @@ h2 {
     padding: 10px 14px;
     border-radius: 10px;
     font-size: 13px;
-    line-height: 1.4;
+    line-height: 1.5;
+    white-space: pre-wrap;
 }
 
 .chat-message.bot { background-color: #334155; align-self: flex-start; }
@@ -318,6 +424,15 @@ h2 {
     padding: 0 16px;
     border-radius: 6px;
     cursor: pointer;
+}
+
+.fa-fade {
+    animation: fa-fade 1.5s ease-in-out infinite;
+}
+
+@keyframes fa-fade {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
 }
 
 /* Bouton flottant */
@@ -401,10 +516,77 @@ h2 {
 
 /* Carnet */
 .note-creator {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 15px;
+}
+
+.note-creator textarea {
+    min-height: 80px;
+}
+
+.note-card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+    word-wrap: break-word;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.note-card .note-text {
+    flex: 1;
+    color: var(--text-main);
+}
+
+.note-card .note-delete {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.note-card .note-delete:hover {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    display: none;
+}
+
+.empty-state i {
+    font-size: 40px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 14px;
 }
 
 /* Responsive */
