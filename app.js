@@ -1,3 +1,31 @@
+// --- CONFIGURATION SUPABASE ---
+const SUPABASE_URL = 'https://kdhchzkurngbgynpytrh.supabase.co';
+const SUPABASE_ANON_KEY = 'Sb_publishable_atCUDbOqr6Cn9iDxSKbrWQ_w2sa0j_1';
+
+// Initialisation de Supabase
+const supabaseClient = (window.supabase && SUPABASE_URL) 
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+    : null;
+
+// Fonction pour enregistrer le score dans Supabase
+async function saveQuizScoreToSupabase(scoreTotal) {
+    if (!supabaseClient) {
+        console.log("Supabase n'est pas initialisé.");
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from('quiz_scores')
+        .insert([{ score: scoreTotal, created_at: new Date() }]);
+
+    if (error) {
+        console.error("Erreur lors de l'enregistrement dans Supabase :", error.message);
+    } else {
+        console.log("Score enregistré avec succès dans Supabase !", data);
+    }
+}
+
+// --- GESTION DE LA NAVIGATION ---
 function switchSection(sectionId, event) {
     const sections = document.querySelectorAll('.section-content');
     sections.forEach(sec => sec.classList.remove('active'));
@@ -12,6 +40,7 @@ function switchSection(sectionId, event) {
     }
 }
 
+// --- GESTION DU CHAT IA ---
 function sendMessage() {
     const input = document.getElementById('userInput');
     const messagesContainer = document.getElementById('chatMessages');
@@ -42,6 +71,7 @@ function handleKeyPress(event) {
     }
 }
 
+// --- GESTION DES QUIZ ---
 const quizData = [
     {
         question: "Quelle est la première étape essentielle pour lancer un projet entrepreneurial solide ?",
@@ -94,6 +124,9 @@ function loadQuestion() {
         document.getElementById('quiz-question').textContent = `Vous avez terminé le quiz avec un score de ${score} / ${quizData.length} !`;
         document.getElementById('quiz-options').innerHTML = "<p style='color:#818cf8;'>Félicitations pour votre progression entrepreneuriale !</p>";
         document.getElementById('quiz-back').style.display = 'inline-block';
+        
+        // Enregistrement automatique du score dans Supabase
+        saveQuizScoreToSupabase(score);
     }
 }
 
