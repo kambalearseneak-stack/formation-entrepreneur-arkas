@@ -25,7 +25,154 @@ body {
     flex-direction: column;
 }
 
-/* Barre d'authentification */
+/* ============================================
+   ÉCRAN DE CONNEXION PLEIN ÉCRAN
+   ============================================ */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.login-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.login-box {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 35px 30px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.login-logo i {
+    font-size: 40px;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.login-logo h1 {
+    font-size: 28px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+.login-logo p {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.login-tabs {
+    display: flex;
+    background-color: var(--bg-main);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+}
+
+.login-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.login-tab.active {
+    background-color: var(--accent);
+    color: white;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.login-form input {
+    padding: 13px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.btn-full {
+    width: 100%;
+    padding: 13px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.overlay-message {
+    font-size: 12px;
+    text-align: center;
+    margin-top: 8px;
+    min-height: 18px;
+}
+
+.overlay-message.error {
+    color: var(--danger);
+}
+
+.overlay-message.success {
+    color: var(--success);
+}
+
+.login-footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* ============================================
+   BARRE D'AUTHENTIFICATION HAUT
+   ============================================ */
 .top-auth-bar {
     display: flex;
     justify-content: space-between;
@@ -50,21 +197,9 @@ body {
     color: var(--accent);
 }
 
-.auth-box-inline {
+.auth-wrapper {
     display: flex;
-    gap: 8px;
     align-items: center;
-    flex-wrap: wrap;
-}
-
-.auth-box-inline input {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text-main);
-    font-size: 13px;
-    width: 140px;
 }
 
 .user-info {
@@ -72,9 +207,12 @@ body {
     align-items: center;
     gap: 8px;
     font-size: 13px;
+    flex-wrap: wrap;
 }
 
-/* Navigation */
+/* ============================================
+   NAVIGATION
+   ============================================ */
 .main-nav {
     display: flex;
     gap: 8px;
@@ -98,6 +236,7 @@ body {
     align-items: center;
     gap: 6px;
     transition: all 0.3s ease;
+    font-family: inherit;
 }
 
 .nav-btn:hover, .nav-btn.active {
@@ -105,7 +244,9 @@ body {
     color: white;
 }
 
-/* Contenu */
+/* ============================================
+   CONTENU PRINCIPAL
+   ============================================ */
 .app-container {
     max-width: 1100px;
     margin: 20px auto;
@@ -155,7 +296,9 @@ h2 {
     margin-bottom: 15px;
 }
 
-/* Hero */
+/* ============================================
+   HERO / ACCUEIL
+   ============================================ */
 .hero-card {
     background: linear-gradient(135deg, #1e293b, #334155);
     padding: 30px;
@@ -167,96 +310,9 @@ h2 {
 .hero-card h1 { font-size: 26px; margin-bottom: 8px; }
 .hero-card p { color: var(--text-muted); font-size: 14px; }
 
-.hero-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-
-.btn-hero-primary, .btn-hero-secondary {
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: transform 0.2s, background 0.2s;
-}
-
-.btn-hero-primary {
-    background-color: white;
-    color: var(--bg-main);
-}
-
-.btn-hero-primary:hover {
-    transform: translateY(-2px);
-    background-color: #e2e8f0;
-}
-
-.btn-hero-secondary {
-    background-color: transparent;
-    color: white;
-    border: 2px solid rgba(255,255,255,0.3);
-}
-
-.btn-hero-secondary:hover {
-    border-color: white;
-    transform: translateY(-2px);
-}
-
-/* Section d'inscription accueil */
-.auth-section-home {
-    background-color: var(--bg-card);
-    border: 2px solid var(--accent);
-    border-radius: 14px;
-    padding: 25px;
-    margin-bottom: 20px;
-}
-
-.auth-section-home h2 {
-    color: var(--accent);
-    font-size: 22px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.auth-form-home {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 15px;
-}
-
-.auth-form-home input {
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-main);
-    color: var(--text-main);
-    font-size: 14px;
-    width: 100%;
-}
-
-.auth-buttons-home {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.auth-buttons-home button {
-    flex: 1;
-    min-width: 140px;
-    padding: 12px;
-    font-size: 14px;
-}
-
-/* Cartes */
+/* ============================================
+   CARTES
+   ============================================ */
 .cards-grid, .resources-grid, .notes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -287,7 +343,9 @@ h2 {
 .action-card h3 { font-size: 18px; }
 .action-card p { color: var(--text-muted); font-size: 13px; line-height: 1.4; }
 
-/* Boutons */
+/* ============================================
+   BOUTONS
+   ============================================ */
 .btn-primary, .btn-save, .btn-download, .btn-whatsapp {
     background-color: var(--accent);
     color: white;
@@ -301,6 +359,7 @@ h2 {
     display: inline-block;
     text-align: center;
     font-size: 13px;
+    font-family: inherit;
 }
 
 .btn-primary:hover, .btn-save:hover, .btn-download:hover, .btn-whatsapp:hover {
@@ -323,6 +382,7 @@ h2 {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    font-family: inherit;
 }
 
 .btn-like:hover {
@@ -330,7 +390,9 @@ h2 {
     color: var(--danger);
 }
 
-/* Formations */
+/* ============================================
+   FORMATIONS
+   ============================================ */
 .module-box {
     background-color: var(--bg-card);
     border: 1px solid var(--border);
@@ -366,7 +428,9 @@ h2 {
     font-family: inherit;
 }
 
-/* Chat */
+/* ============================================
+   CHAT
+   ============================================ */
 .chat-container {
     background-color: var(--bg-card);
     border: 1px solid var(--border);
@@ -415,6 +479,7 @@ h2 {
     padding: 8px 12px;
     color: white;
     font-size: 13px;
+    font-family: inherit;
 }
 
 .chat-input-area button {
@@ -435,7 +500,9 @@ h2 {
     50% { opacity: 1; }
 }
 
-/* Bouton flottant */
+/* ============================================
+   BOUTON FLOTTANT
+   ============================================ */
 .floating-ai-btn {
     position: fixed;
     bottom: 20px;
@@ -471,7 +538,9 @@ h2 {
     100% { transform: scale(1.4); opacity: 0; }
 }
 
-/* Bibliothèque */
+/* ============================================
+   BIBLIOTHÈQUE
+   ============================================ */
 .pdf-icon { font-size: 32px; color: var(--danger); }
 .whatsapp-icon { font-size: 40px; color: var(--success); }
 
@@ -496,6 +565,7 @@ h2 {
     background: #0f172a;
     color: white;
     font-size: 12px;
+    font-family: inherit;
 }
 
 .comments-list {
@@ -514,7 +584,9 @@ h2 {
     padding: 30px;
 }
 
-/* Carnet */
+/* ============================================
+   CARNET
+   ============================================ */
 .note-creator {
     background-color: var(--bg-card);
     border: 1px solid var(--border);
@@ -589,19 +661,20 @@ h2 {
     font-size: 14px;
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 640px) {
-    .top-auth-bar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .auth-box-inline input {
-        width: 100%;
-    }
     .hero-card h1 { font-size: 22px; }
     .chat-message { max-width: 95%; }
     .nav-btn {
         font-size: 12px;
         padding: 6px 10px;
+    }
+    .login-box {
+        padding: 25px 20px;
+    }
+    .login-logo h1 {
+        font-size: 24px;
     }
 }
