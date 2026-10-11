@@ -37,18 +37,140 @@ function switchTab(tabId) {
 }
 
 // ============================================
-// AUTHENTIFICATION
+// AUTHENTIFICATION AVEC OVERLAY
 // ============================================
+let overlayMode = 'login'; // 'login' ou 'signup'
+
 async function checkAuth() {
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         currentUser = session ? session.user : null;
         renderAuthUI();
+        
+        // Afficher ou cacher l'overlay selon l'état de connexion
+        const overlay = document.getElementById('login-overlay');
+        if (overlay) {
+            if (currentUser) {
+                overlay.classList.add('hidden');
+            } else {
+                overlay.classList.remove('hidden');
+            }
+        }
     } catch (error) {
         console.error("Erreur d'authentification:", error);
     }
 }
 
+// Basculer entre Connexion et Inscription dans l'overlay
+function switchLoginTab(mode) {
+    overlayMode = mode;
+    
+    const tabLogin = document.getElementById('tab-login');
+    const tabSignup = document.getElementById('tab-signup');
+    const submitBtn = document.getElementById('overlay-submit');
+    const passwordInput = document.getElementById('overlay-password');
+    const message = document.getElementById('overlay-message');
+    
+    if (mode === 'login') {
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+        submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Se connecter';
+        passwordInput.setAttribute('autocomplete', 'current-password');
+    } else {
+        tabSignup.classList.add('active');
+        tabLogin.classList.remove('active');
+        submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> S\'inscrire';
+        passwordInput.setAttribute('autocomplete', 'new-password');
+    }
+    
+    // Vider le message
+    message.textContent = '';
+    message.className = 'overlay-message';
+}
+
+// Soumettre depuis l'overlay (connexion ou inscription)
+async function handleOverlaySubmit() {
+    const email = document.getElementById('overlay-email').value.trim();
+    const password = document.getElementById('overlay-password').value;
+    const message = document.getElementById('overlay-message');
+    const submitBtn = document.getElementById('overlay-submit');
+    
+    // Vider le message précédent
+    message.textContent = '';
+    message.className = 'overlay-message';
+    
+    // Validation
+    if (!email || !password) {
+        message.textContent = 'Veuillez remplir tous les champs.';
+        message.className = 'overlay-message error';
+        return;
+    }
+    
+    if (overlayMode === 'signup' && password.length < 6) {
+        message.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
+        message.className = 'overlay-message error';
+        return;
+    }
+    
+    // Désactiver le bouton pendant le traitement
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Traitement...';
+    submitBtn.disabled = true;
+    
+    try {
+        if (overlayMode === 'signup') {
+            // Inscription
+            const { error } = await supabaseClient.auth.signUp({ email, password });
+            
+            if (error) {
+                message.textContent = 'Erreur : ' + error.message;
+                message.className = 'overlay-message error';
+            } else {
+                message.textContent = '✅ Inscription réussie ! Connexion en cours...';
+                message.className = 'overlay-message success';
+                
+                // Connexion automatique après inscription
+                const { error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password });
+                
+                if (loginError) {
+                    message.textContent = 'Inscription OK, connectez-vous manuellement.';
+                    message.className = 'overlay-message success';
+                    switchLoginTab('login');
+                } else {
+                    // Connexion réussie, fermer l'overlay
+                    await checkAuth();
+                    document.getElementById('overlay-email').value = '';
+                    document.getElementById('overlay-password').value = '';
+                }
+            }
+        } else {
+            // Connexion
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                message.textContent = 'Erreur : ' + error.message;
+                message.className = 'overlay-message error';
+            } else {
+                message.textContent = '✅ Connexion réussie !';
+                message.className = 'overlay-message success';
+                
+                setTimeout(async () => {
+                    await checkAuth();
+                    document.getElementById('overlay-email').value = '';
+                    document.getElementById('overlay-password').value = '';
+                }, 400);
+            }
+        }
+    } catch (err) {
+        message.textContent = 'Erreur inattendue : ' + err.message;
+        message.className = 'overlay-message error';
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+// Afficher l'utilisateur connecté dans le header
 function renderAuthUI() {
     const container = document.getElementById('auth-container');
     if (!container) return;
@@ -62,41 +184,7 @@ function renderAuthUI() {
             </div>
         `;
     } else {
-        container.innerHTML = `
-            <div class="auth-box-inline">
-                <input type="email" id="auth-email" placeholder="Email...">
-                <input type="password" id="auth-password" placeholder="Mot de passe...">
-                <button onclick="handleLogin()" class="btn-primary btn-small">Connexion</button>
-                <button onclick="handleSignup()" class="btn-save btn-small">S'inscrire</button>
-            </div>
-        `;
-    }
-}
-
-async function handleLogin() {
-    const email = document.getElementById('auth-email').value.trim();
-    const password = document.getElementById('auth-password').value;
-    if (!email || !password) return alert("Veuillez remplir l'email et le mot de passe.");
-
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) alert("Erreur : " + error.message);
-    else {
-        alert("✅ Connexion réussie !");
-        checkAuth();
-    }
-}
-
-async function handleSignup() {
-    const email = document.getElementById('auth-email').value.trim();
-    const password = document.getElementById('auth-password').value;
-    if (!email || !password) return alert("Veuillez remplir l'email et le mot de passe.");
-    if (password.length < 6) return alert("Le mot de passe doit contenir au moins 6 caractères.");
-
-    const { error } = await supabaseClient.auth.signUp({ email, password });
-    if (error) alert("Erreur : " + error.message);
-    else {
-        alert("✅ Inscription réussie ! Vous pouvez vous connecter.");
-        checkAuth();
+        container.innerHTML = '';
     }
 }
 
@@ -104,50 +192,21 @@ async function handleLogout() {
     await supabaseClient.auth.signOut();
     currentUser = null;
     renderAuthUI();
-}
-
-// ============================================
-// AUTHENTIFICATION DEPUIS LA PAGE D'ACCUEIL
-// ============================================
-function scrollToAuth() {
-    document.getElementById('auth-section-home').scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center' 
-    });
-}
-
-async function handleSignupFromHome() {
-    const email = document.getElementById('home-email').value.trim();
-    const password = document.getElementById('home-password').value;
     
-    if (!email || !password) return alert("Veuillez remplir tous les champs.");
-    if (password.length < 6) return alert("Le mot de passe doit contenir au moins 6 caractères.");
-    
-    const { error } = await supabaseClient.auth.signUp({ email, password });
-    if (error) {
-        alert("Erreur : " + error.message);
-    } else {
-        alert("✅ Inscription réussie ! Vous pouvez vous connecter.");
-        document.getElementById('home-email').value = '';
-        document.getElementById('home-password').value = '';
-        checkAuth();
+    // Réafficher l'overlay
+    const overlay = document.getElementById('login-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
     }
-}
-
-async function handleLoginFromHome() {
-    const email = document.getElementById('home-email').value.trim();
-    const password = document.getElementById('home-password').value;
     
-    if (!email || !password) return alert("Veuillez remplir tous les champs.");
-    
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) {
-        alert("Erreur : " + error.message);
-    } else {
-        alert("✅ Connexion réussie !");
-        document.getElementById('home-email').value = '';
-        document.getElementById('home-password').value = '';
-        checkAuth();
+    // Réinitialiser l'overlay
+    switchLoginTab('login');
+    document.getElementById('overlay-email').value = '';
+    document.getElementById('overlay-password').value = '';
+    const message = document.getElementById('overlay-message');
+    if (message) {
+        message.textContent = '';
+        message.className = 'overlay-message';
     }
 }
 
@@ -176,7 +235,7 @@ async function saveReflection(fieldId, questionLabel) {
 }
 
 // ============================================
-// ASSISTANT IA AVEC GEMINI (via backend Vercel)
+// ASSISTANT IA AVEC GEMINI
 // ============================================
 let chatHistory = [];
 
@@ -370,6 +429,19 @@ function deleteNote(noteId) {
 // INITIALISATION
 // ============================================
 window.addEventListener('DOMContentLoaded', () => {
+    // Écouteur pour la touche Entrée dans l'overlay
+    const emailInput = document.getElementById('overlay-email');
+    const passwordInput = document.getElementById('overlay-password');
+    
+    [emailInput, passwordInput].forEach(input => {
+        if (input) {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleOverlaySubmit();
+            });
+        }
+    });
+    
+    // Vérifier l'auth, charger les commentaires et les notes
     checkAuth();
     loadComments('res_bp');
     renderNotes();
