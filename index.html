@@ -3,184 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arkas - Formation Entrepreneuriale</title>
-    <!-- Intégration de la bibliothèque Supabase -->
+    <title>Arkas - Plateforme d'Accompagnement Entrepreneurial</title>
+    <!-- FontAwesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>ARKAS</h1>
-        <nav>
-            <button onclick="switchSection('accueil', event)" class="active">Accueil</button>
-            <button onclick="switchSection('ia', event)">Arcas Assistance IA</button>
-            <button onclick="switchSection('formations', event)">Formations & Réflexion</button>
-            <button onclick="switchSection('ressources', event)">Bibliothèque & Vidéos</button>
-            <button onclick="switchSection('coaching', event)">Coaching & Communauté</button>
-            <button onclick="switchSection('taches', event)">Carnet de Bord & Tâches</button>
-        </nav>
+    <!-- Barre d'authentification en haut -->
+    <header class="top-auth-bar">
+        <div class="brand-logo">
+            <i class="fa-solid fa-rocket"></i> <span>ARKAS</span>
+        </div>
+        <div id="auth-container">
+            <!-- Dynamique via JS : Formulaire Connexion / Inscription ou Profil utilisateur -->
+        </div>
     </header>
 
-    <main>
-        <!-- Accueil -->
-        <section id="accueil" class="section-content active">
-            <h2>Bienvenue sur Arkas</h2>
-            <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux avec un accompagnement intelligent.</p>
-            <div class="card-grid">
-                <div class="card">
-                    <h3>🚀 Formations & Réflexion</h3>
+    <!-- Navigation Principale -->
+    <nav class="main-nav">
+        <button class="nav-btn active" data-tab="home"><i class="fa-solid fa-house"></i> Accueil</button>
+        <button class="nav-btn" data-tab="formations"><i class="fa-solid fa-book-open"></i> Formations</button>
+        <button class="nav-btn" data-tab="assistant"><i class="fa-solid fa-robot"></i> Assistant IA</button>
+        <button class="nav-btn" data-tab="bibliotheque"><i class="fa-solid fa-folder-open"></i> Bibliothèque</button>
+        <button class="nav-btn" data-tab="communaute"><i class="fa-solid fa-users"></i> Communauté</button>
+        <button class="nav-btn" data-tab="carnet"><i class="fa-solid fa-pen-to-square"></i> Carnet</button>
+    </nav>
+
+    <!-- Contenu de l'application -->
+    <main class="app-container">
+
+        <!-- ONGLET ACCUEIL -->
+        <section id="home" class="tab-content active">
+            <div class="hero-card">
+                <h1>Bienvenue sur Arkas</h1>
+                <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux avec un accompagnement intelligent.</p>
+            </div>
+            <div class="cards-grid">
+                <div class="action-card" onclick="switchTab('formations')">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <h3>Formations & Réflexion</h3>
                     <p>Suivez vos modules et consignez vos réflexions entrepreneuriales privées.</p>
-                    <button class="btn-action" onclick="switchSection('formations', event)">Explorer</button>
+                    <button class="btn-primary">Explorer</button>
                 </div>
-                <div class="card">
-                    <h3>🤖 Arcas Assistance IA</h3>
+                <div class="action-card" onclick="switchTab('assistant')">
+                    <i class="fa-solid fa-brain"></i>
+                    <h3>Arkas Assistance IA</h3>
                     <p>Posez vos questions business 24/7 à votre assistant dédié.</p>
-                    <button class="btn-action" onclick="switchSection('ia', event)">Discuter</button>
+                    <button class="btn-primary">Discuter</button>
                 </div>
-                <div class="card">
-                    <h3>💡 Mentorat & Communauté</h3>
+                <div class="action-card" onclick="switchTab('communaute')">
+                    <i class="fa-solid fa-handshake"></i>
+                    <h3>Mentorat & Communauté</h3>
                     <p>Rejoignez notre groupe WhatsApp et contactez notre service d'assistance.</p>
-                    <button class="btn-action" onclick="switchSection('coaching', event)">Accéder</button>
+                    <button class="btn-primary">Accéder</button>
                 </div>
             </div>
         </section>
 
-        <!-- Arcas Assistance IA -->
-        <section id="ia" class="section-content">
-            <h2>Arcas Assistance IA</h2>
-            <p>Votre assistant intelligent pour répondre à toutes vos interrogations en entrepreneuriat.</p>
-            <div class="chat-box">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message ai">Bonjour ! Je suis Arcas Assistance IA. Comment puis-je vous aider à faire croître votre entreprise aujourd'hui ?</div>
+        <!-- ONGLET FORMATIONS & REFLEXIONS -->
+        <section id="formations" class="tab-content">
+            <h2>Modules de Formation & Réflexions</h2>
+            <p class="section-desc">Progressez pas à pas. Vos réponses aux questions ci-dessous sont enregistrées de façon sécurisée dans votre espace privé.</p>
+            
+            <div class="module-box">
+                <h3>Module 1 : Trouver et Valider son Idée</h3>
+                <div class="question-group">
+                    <label>Quel problème majeur résout votre idée d'entreprise ?</label>
+                    <textarea id="q1" placeholder="Ex: Difficulté pour les PME locales de trouver des financements..."></textarea>
+                    <button class="btn-save" onclick="saveReflection('q1', 'Problème majeur résolu')"><i class="fa-solid fa-floppy-disk"></i> Enregistrer ma réflexion</button>
+                </div>
+                <div class="question-group">
+                    <label>Qui est votre client idéal (Persona) ?</label>
+                    <textarea id="q2" placeholder="Ex: Propriétaires de boutiques entre 25 et 45 ans..."></textarea>
+                    <button class="btn-save" onclick="saveReflection('q2', 'Client idéal')"><i class="fa-solid fa-floppy-disk"></i> Enregistrer ma réflexion</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ONGLET ASSISTANT IA -->
+        <section id="assistant" class="tab-content">
+            <h2>Assistant IA Arkas</h2>
+            <p class="section-desc">Votre conseiller virtuel spécialisé en entrepreneuriat.</p>
+            <div class="chat-container">
+                <div id="chat-box" class="chat-box">
+                    <div class="chat-message bot">
+                        <i class="fa-solid fa-robot"></i>
+                        <p>Bonjour ! Je suis l'assistant Arkas. Comment puis-je vous aider à structurer ou développer votre entreprise aujourd'hui ?</p>
+                    </div>
                 </div>
                 <div class="chat-input-area">
-                    <input type="text" id="userInput" placeholder="Posez votre question à Arcas Assistance IA..." onkeypress="handleKeyPress(event)">
-                    <button class="btn-action" style="margin-top:0;" onclick="sendMessage()">Envoyer</button>
+                    <input type="text" id="user-input" placeholder="Posez votre question business ici..." onkeypress="handleChatKey(event)">
+                    <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
         </section>
 
-        <!-- Formations & Réflexion Personnelle -->
-        <section id="formations" class="section-content">
-            <h2>Modules de Formation & Réflexion Personnelle</h2>
-            <p>Répondez à ces questions de compréhension pour structurer votre projet en toute confidentialité.</p>
-            
-            <div id="formation-menu" class="card-grid">
-                <div class="card">
-                    <h3>Module 1 : Vision & Analyse du Problème</h3>
-                    <p>Définissez clairement le besoin de vos futurs clients et votre proposition de valeur.</p>
-                    <button class="btn-action" onclick="startReflection()">Commencer l'exercice</button>
-                </div>
-                <div class="card">
-                    <h3>Module 2 : Stratégie & Croissance</h3>
-                    <p>Anticipez vos modèles de revenus et vos étapes de développement.</p>
-                    <button class="btn-action" onclick="alert('Module disponible prochainement !')">Bientôt disponible</button>
-                </div>
-            </div>
-
-            <!-- Conteneur du questionnaire de réflexion (masqué par défaut) -->
-            <div id="reflection-box" class="quiz-container" style="display: none;">
-                <h3 id="reflection-title">Exercice - Module 1</h3>
-                <p id="reflection-question" style="font-size: 1.1rem; margin: 20px 0;"></p>
-                
-                <textarea id="reflection-input" rows="5" placeholder="Écrivez votre réponse personnelle ici..." style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); padding: 12px; border-radius: 8px; color: white; outline: none; box-sizing: border-box;"></textarea>
-                
-                <div style="margin-top: 15px; display: flex; gap: 10px;">
-                    <button class="btn-action" onclick="saveReflectionAnswer()">Enregistrer ma réponse en privé</button>
-                    <button class="btn-action" id="reflection-back" style="display:none; background: rgba(255,255,255,0.1);" onclick="resetFormations()">Retour aux modules</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bibliothèque, Vidéos, Likes & Commentaires -->
-        <section id="ressources" class="section-content">
-            <h2>Bibliothèque & Vidéothèque Publique</h2>
-            <p>Téléchargez les documents publics et participez aux discussions en laissant vos likes et commentaires.</p>
-            
-            <div class="card-grid">
-                <!-- Livre / PDF 1 -->
-                <div class="card">
-                    <h3>📚 Guide de l'Entrepreneur (PDF Public)</h3>
-                    <p>Manuel complet sur la structuration de projet open-source.</p>
-                    <a href="#" download target="_blank">
-                        <button class="btn-action" style="margin-top: 10px;">📥 Télécharger le PDF</button>
-                    </a>
-                    
-                    <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-                        <button class="btn-action" onclick="likeItem('pdf1')" style="background: rgba(255,255,255,0.1);">❤️ J'aime (<span id="likes-pdf1">12</span>)</button>
-                        <div style="margin-top: 10px;">
-                            <input type="text" id="comment-pdf1" placeholder="Ajouter un commentaire..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius: 6px; color: white; box-sizing: border-box; margin-bottom: 5px;">
-                            <button class="btn-action" style="padding: 6px 12px; font-size: 0.9rem;" onclick="addComment('pdf1')">Commenter</button>
-                        </div>
-                        <div id="comments-list-pdf1" style="margin-top: 10px; font-size: 0.9rem; color: #cbd5e1;">
-                            <p style="margin: 4px 0; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 4px;">💬 <em>Jean :</em> Très instructif pour débuter !</p>
+        <!-- ONGLET BIBLIOTHEQUE -->
+        <section id="bibliotheque" class="tab-content">
+            <h2>Bibliothèque & Ressources</h2>
+            <p class="section-desc">Téléchargez les documents de travail et guides pratiques.</p>
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <i class="fa-solid fa-file-pdf pdf-icon"></i>
+                    <h3>Modèle de Business Plan</h3>
+                    <p>Guide complet et canevas pour rédiger votre plan d'affaires.</p>
+                    <div class="resource-actions">
+                        <a href="#" class="btn-download" download><i class="fa-solid fa-download"></i> Télécharger</a>
+                        <div class="social-interactions">
+                            <button onclick="likeResource('res_bp')"><i class="fa-solid fa-heart"></i> <span id="likes-res_bp">0</span></button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Vidéo 1 -->
-                <div class="card">
-                    <h3>🎥 Conférence : Levée de Fonds</h3>
-                    <p>Rediffusion de la session d'atelier stratégique.</p>
-                    <button class="btn-action" onclick="alert('Ouverture du lecteur vidéo...')">Regarder la vidéo</button>
-                    
-                    <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-                        <button class="btn-action" onclick="likeItem('vid1')" style="background: rgba(255,255,255,0.1);">❤️ J'aime (<span id="likes-vid1">25</span>)</button>
-                        <div style="margin-top: 10px;">
-                            <input type="text" id="comment-vid1" placeholder="Ajouter un commentaire..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius: 6px; color: white; box-sizing: border-box; margin-bottom: 5px;">
-                            <button class="btn-action" style="padding: 6px 12px; font-size: 0.9rem;" onclick="addComment('vid1')">Commenter</button>
-                        </div>
-                        <div id="comments-list-vid1" style="margin-top: 10px; font-size: 0.9rem; color: #cbd5e1;">
-                            <p style="margin: 4px 0; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 4px;">💬 <em>Sarah :</em> Merci pour ces précieux conseils.</p>
-                        </div>
+                    <div class="comments-section">
+                        <input type="text" id="comment-res_bp" placeholder="Ajouter un commentaire...">
+                        <button onclick="addComment('res_bp')">Publier</button>
+                        <div id="comments-list-res_bp" class="comments-list"></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Coaching & Communauté / Support -->
-        <section id="coaching" class="section-content">
-            <h2>Espace Coaching, Support & Communauté</h2>
-            <p>Connectez-vous directement avec notre équipe et les autres entrepreneurs.</p>
-            
-            <div class="card-grid">
-                <div class="card">
-                    <h3>💬 Communauté WhatsApp</h3>
-                    <p>Échangez avec les membres et suivez les actualités en direct de la communauté Arkas.</p>
-                    <a href="https://chat.whatsapp.com/KMujAS0wQZW8EhXa3i4CPY" target="_blank">
-                        <button class="btn-action" style="margin-top: 15px;">Rejoindre le groupe WhatsApp</button>
-                    </a>
-                </div>
-
-                <div class="card">
-                    <h3>📞 Service Client & Assistance</h3>
-                    <p>Besoin d'aide ou d'un accompagnement personnalisé ? Contactez notre service dédié :</p>
-                    <p style="font-size: 1.2rem; font-weight: bold; color: #818cf8; margin: 15px 0;">0992769085</p>
-                    <button class="btn-action" onclick="alert('Numéro du service prêt à être joint : 0992769085')">Appeler le Support</button>
-                </div>
+        <!-- ONGLET COMMUNAUTE -->
+        <section id="communaute" class="tab-content">
+            <h2>Coaching & Communauté</h2>
+            <div class="community-box">
+                <i class="fa-brands fa-whatsapp whatsapp-icon"></i>
+                <h3>Rejoignez le groupe WhatsApp officiel</h3>
+                <p>Échangez avec d'autres entrepreneurs, posez vos questions aux coachs et recevez des alertes en direct.</p>
+                <a href="https://chat.whatsapp.com/votre-lien-groupe" target="_blank" class="btn-whatsapp">Rejoindre le groupe</a>
             </div>
         </section>
 
-        <!-- Carnet de Bord & Tâches -->
-        <section id="taches" class="section-content">
+        <!-- ONGLET CARNET DE BORD -->
+        <section id="carnet" class="tab-content">
             <h2>Carnet de Bord & Tâches</h2>
-            <p>Consignez vos idées d'entreprise et suivez vos actions prioritaires en toute confidentialité.</p>
-            
-            <div class="card" style="margin-bottom: 20px;">
-                <h3>✍️ Nouvelle Note / Idée Business</h3>
-                <textarea id="noteInput" rows="3" placeholder="Notez une idée, un contact ou un rappel rapide..." style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); padding: 12px; border-radius: 8px; color: white; outline: none; box-sizing: border-box; margin-top: 10px;"></textarea>
-                <button class="btn-action" onclick="saveUserNote()">Enregistrer la note</button>
+            <p class="section-desc">Notez vos idées rapides et actions prioritaires du jour.</p>
+            <div class="note-creator">
+                <textarea id="new-note" placeholder="Nouvelle note rapide ou tâche à accomplir..."></textarea>
+                <button class="btn-primary" onclick="saveNote()">Ajouter au carnet</button>
             </div>
-
-            <div class="card">
-                <h3>📋 Mes Objectifs du Moment</h3>
-                <p>✅ Valider le Module 1 de formation</p>
-                <p>⏳ Finaliser le business plan</p>
-            </div>
+            <div id="notes-list" class="notes-grid"></div>
         </section>
+
     </main>
 
+    <!-- Bouton Flottant Assistant IA (Visible partout) -->
+    <div class="floating-ai-btn" onclick="switchTab('assistant')" title="Discuter avec l'IA">
+        <i class="fa-solid fa-robot"></i>
+        <span class="pulse-ring"></span>
+    </div>
+
+    <!-- Script principal de l'application -->
     <script src="app.js"></script>
 </body>
 </html>
