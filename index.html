@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkas - Formation Entrepreneuriale</title>
+    <style>
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBackground 15s ease infinite;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            margin-left: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        nav button:hover, nav button.active {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+
+        main {
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ARKAS</h1>
+        <nav>
+            <button onclick="switchSection('accueil', event)" class="active">Accueil</button>
+            <button onclick="switchSection('ia', event)">Arcas Assistance IA</button>
+            <button onclick="switchSection('formations', event)">Formations & Quiz</button>
+            <button onclick="switchSection('ressources', event)">Bibliothèque & Vidéos</button>
+            <button onclick="switchSection('coaching', event)">Coaching & Mentorat</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Section Accueil -->
+        <section id="accueil" class="section-content active">
+            <h2>Bienvenue sur Arkas</h2>
+            <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux avec un accompagnement intelligent.</p>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>🚀 Formations Actives</h3>
+                    <p>Suivez vos modules d'apprentissage et validez vos acquis en temps réel.</p>
+                </div>
+                <div class="card">
+                    <h3>🤖 Arcas Assistance IA</h3>
+                    <p>Posez vos questions business 24/7 à votre assistant dédié.</p>
+                </div>
+                <div class="card">
+                    <h3>💡 Mentorat & Suivi</h3>
+                    <p>Bénéficiez de conseils d'experts sur mesure pour votre entreprise.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section IA -->
+        <section id="ia" class="section-content">
+            <h2>Arcas Assistance IA</h2>
+            <p>Discutez en direct avec l'intelligence artificielle pour résoudre vos problématiques entrepreneuriales.</p>
+            <div class="card" style="height: 300px; display: flex; flex-direction: column; justify-content: flex-end;">
+                <p style="color: #94a3b8;">[Fenêtre de chat avec Arcas Assistance IA en cours de chargement...]</p>
+            </div>
+        </section>
+
+        <!-- Section Formations -->
+        <section id="formations" class="section-content">
+            <h2>Modules de Formation & Quiz</h2>
+            <p>Progressez pas à pas à travers les plans de cours et testez vos connaissances.</p>
+        </section>
+
+        <!-- Section Ressources -->
+        <section id="ressources" class="section-content">
+            <h2>Bibliothèque & Vidéos</h2>
+            <p>Retrouvez tous vos documents PDF, supports de cours et liens vidéo.</p>
+        </section>
+
+        <!-- Section Coaching -->
+        <section id="coaching" class="section-content">
+            <h2>Espace Coaching & Mentorat</h2>
+            <p>Accédez à vos sessions de suivi personnalisé et organisez vos rendez-vous.</p>
+        </section>
+    </main>
+
+    <script>
+        function switchSection(sectionId, event) {
+            const sections = document.querySelectorAll('.section-content');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('nav button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
