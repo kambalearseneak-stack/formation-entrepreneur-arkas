@@ -1,238 +1,191 @@
 // --- CONFIGURATION SUPABASE ---
-const SUPABASE_URL = 'https://kdhchzkurngbgynpytrh.supabase.co';
-const SUPABASE_ANON_KEY = 'Sb_publishable_atCUDbOqr6Cn9iDxSKbrWQ_w2sa0j_1';
+const SUPABASE_URL = 'VOTRE_URL_SUPABASE'; // Remplacez par votre URL si nécessaire
+const SUPABASE_ANON_KEY = 'VOTRE_CLE_ANON_SUPABASE'; // Remplacez par votre clé si nécessaire
 
-// Initialisation de Supabase
-const supabaseClient = (window.supabase && SUPABASE_URL) 
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
-    : null;
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentUser = null;
 
-// Chargement initial des données dynamiques (likes et commentaires) au démarrage
-document.addEventListener("DOMContentLoaded", () => {
-    loadResourceStats('pdf1');
-    loadResourceStats('vid1');
+// --- GESTION DES ONGLETS ---
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+        switchTab(targetTab);
+    });
 });
 
-// --- GESTION DES LIKES ET COMMENTAIRES CONNECTÉS À SUPABASE ---
-async function loadResourceStats(itemId) {
-    if (!supabaseClient) return;
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
 
-    // Charger les likes
-    const { data: likeData } = await supabaseClient
-        .from('resource_likes')
-        .select('likes_count')
-        .eq('resource_id', itemId)
-        .single();
-    
-    if (likeData) {
-        document.getElementById(`likes-${itemId}`).textContent = likeData.likes_count;
-    }
+    const activeTab = document.getElementById(tabId);
+    if (activeTab) activeTab.classList.add('active');
 
-    // Charger les commentaires
-    const { data: commentsData } = await supabaseClient
-        .from('resource_comments')
-        .select('*')
-        .eq('resource_id', itemId)
-        .order('created_at', { ascending: true });
+    const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
 
-    if (commentsData && commentsData.length > 0) {
-        const list = document.getElementById(`comments-list-${itemId}`);
-        list.innerHTML = '';
-        commentsData.forEach(c => {
-            const newP = document.createElement('p');
-            newP.style.margin = "4px 0";
-            newP.style.background = "rgba(255,255,255,0.03)";
-            newP.style.padding = "6px";
-            newP.style.borderRadius = "4px";
-            newP.innerHTML = `💬 <em>Membre :</em> ${c.comment_text}`;
-            list.appendChild(newP);
-        });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// --- SYSTEME D'AUTHENTIFICATION (Connexion / Inscription) ---
+async function checkAuth() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    currentUser = session ? session.user : null;
+    renderAuthUI();
+}
+
+function renderAuthUI() {
+    const container = document.getElementById('auth-container');
+    if (!container) return;
+
+    if (currentUser) {
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
+                <span><i class="fa-solid fa-user-check" style="color: #22c55e;"></i> ${currentUser.email}</span>
+                <button onclick="handleLogout()" class="btn-primary" style="padding: 6px 12px; font-size: 12px;">Déconnexion</button>
+            </div>
+        `;
+    } else {
+        container.innerHTML = `
+            <div class="auth-box-inline">
+                <input type="email" id="auth-email" placeholder="Email...">
+                <input type="password" id="auth-password" placeholder="Mot de passe...">
+                <button onclick="handleLogin()" class="btn-primary" style="padding: 6px 12px; font-size: 13px;">Connexion</button>
+                <button onclick="handleSignup()" class="btn-save" style="padding: 6px 12px; font-size: 13px;">S'inscrire</button>
+            </div>
+        `;
     }
 }
 
-async function likeItem(itemId) {
-    const span = document.getElementById(`likes-${itemId}`);
-    let currentLikes = parseInt(span.textContent) + 1;
-    span.textContent = currentLikes;
+async function handleLogin() {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    if (!email || !password) return alert("Veuillez remplir l'email et le mot de passe.");
 
-    if (!supabaseClient) return;
-
-    // Mise à jour ou insertion du like dans Supabase
-    const { error } = await supabaseClient
-        .from('resource_likes')
-        .upsert({ resource_id: itemId, likes_count: currentLikes, updated_at: new Date() }, { onConflict: 'resource_id' });
-
-    if (error) {
-        console.error("Erreur mise à jour like :", error.message);
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) alert("Erreur de connexion : " + error.message);
+    else {
+        alert("Connexion réussie !");
+        checkAuth();
     }
 }
 
-async function addComment(itemId) {
-    const input = document.getElementById(`comment-${itemId}`);
-    const commentText = input.value.trim();
-    if (commentText === '') return;
+async function handleSignup() {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    if (!email || !password) return alert("Veuillez remplir l'email et le mot de passe.");
 
-    // Affichage immédiat local
-    const list = document.getElementById(`comments-list-${itemId}`);
-    const newP = document.createElement('p');
-    newP.style.margin = "4px 0";
-    newP.style.background = "rgba(255,255,255,0.03)";
-    newP.style.padding = "6px";
-    newP.style.borderRadius = "4px";
-    newP.innerHTML = `💬 <em>Vous :</em> ${commentText}`;
-    list.appendChild(newP);
-    input.value = '';
-
-    if (!supabaseClient) return;
-
-    // Enregistrement dans Supabase
-    const { error } = await supabaseClient
-        .from('resource_comments')
-        .insert([{ resource_id: itemId, comment_text: commentText, created_at: new Date() }]);
-
-    if (error) {
-        console.error("Erreur enregistrement commentaire :", error.message);
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) alert("Erreur d'inscription : " + error.message);
+    else {
+        alert("Inscription réussie ! Vérifiez vos emails si une confirmation est requise, ou connectez-vous.");
+        checkAuth();
     }
 }
 
-// --- ENREGISTREMENT DES RÉFLEXIONS PERSONNELLES (PRIVÉ) ---
-async function saveReflectionToSupabase(questionText, answerText) {
-    if (!supabaseClient) {
-        alert("Réponse enregistrée localement (mode simulation).");
-        return;
-    }
+async function handleLogout() {
+    await supabaseClient.auth.signOut();
+    currentUser = null;
+    renderAuthUI();
+    alert("Déconnecté avec succès.");
+}
+
+// --- REFLEXIONS PRIVEES ---
+async function saveReflection(fieldId, questionLabel) {
+    if (!currentUser) return alert("Veuillez vous connecter ou vous inscrire en haut de la page pour enregistrer vos réflexions en privé.");
+
+    const answerText = document.getElementById(fieldId).value;
+    if (!answerText.trim()) return alert("Veuillez écrire une réponse avant d'enregistrer.");
 
     const { error } = await supabaseClient
         .from('user_reflections')
-        .insert([{ question: questionText, answer: answerText, created_at: new Date() }]);
+        .insert([{ user_id: currentUser.id, question: questionLabel, answer: answerText }]);
 
-    if (error) {
-        console.error("Erreur Supabase :", error.message);
-    } else {
-        alert("Votre réflexion a été enregistrée en toute confidentialité !");
-    }
+    if (error) alert("Erreur lors de l'enregistrement : " + error.message);
+    else alert("Réflexion enregistrée avec succès dans votre espace privé !");
 }
 
-// --- ENREGISTREMENT DES NOTES DU CARNET DE BORD (PRIVÉ) ---
-async function saveUserNote() {
-    const noteText = document.getElementById('noteInput').value.trim();
-    if (noteText === '') {
-        alert("Veuillez écrire une note avant d'enregistrer.");
-        return;
-    }
-
-    if (!supabaseClient) {
-        alert("Note enregistrée localement (mode simulation).");
-        document.getElementById('noteInput').value = '';
-        return;
-    }
-
-    const { error } = await supabaseClient
-        .from('user_notes')
-        .insert([{ note: noteText, created_at: new Date() }]);
-
-    if (error) {
-        console.error("Erreur Supabase :", error.message);
-    } else {
-        alert("Votre note a été enregistrée en privé avec succès !");
-        document.getElementById('noteInput').value = '';
-    }
+// --- ASSISTANT IA SIMULE / ACTIF ---
+function handleChatKey(event) {
+    if (event.key === 'Enter') sendChatMessage();
 }
 
-// --- GESTION DE LA NAVIGATION ---
-function switchSection(sectionId, event) {
-    const sections = document.querySelectorAll('.section-content');
-    sections.forEach(sec => sec.classList.remove('active'));
+function sendChatMessage() {
+    const input = document.getElementById('user-input');
+    const box = document.getElementById('chat-box');
+    const text = input.value.trim();
+    if (!text) return;
 
-    const buttons = document.querySelectorAll('nav button');
-    buttons.forEach(btn => btn.classList.remove('active'));
-
-    document.getElementById(sectionId).classList.add('active');
-    
-    if (event && event.target.tagName === 'BUTTON') {
-        event.target.classList.add('active');
-    }
-}
-
-// --- GESTION DU CHAT IA ---
-function sendMessage() {
-    const input = document.getElementById('userInput');
-    const messagesContainer = document.getElementById('chatMessages');
-    
-    if (input.value.trim() === '') return;
-
-    const userMsg = document.createElement('div');
-    userMsg.className = 'message user';
-    userMsg.textContent = input.value;
-    messagesContainer.appendChild(userMsg);
-
-    const userText = input.value;
+    // Afficher message utilisateur
+    box.innerHTML += `
+        <div class="chat-message user">
+            <p>${text}</p>
+        </div>
+    `;
     input.value = '';
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    box.scrollTop = box.scrollHeight;
 
+    // Réponse intelligente de l'assistant Arkas
     setTimeout(() => {
-        const aiMsg = document.createElement('div');
-        aiMsg.className = 'message ai';
-        aiMsg.textContent = "J'analyse votre question (\"" + userText + "\"). En tant qu'Arcas Assistance IA, je vous suggère d'appliquer les méthodologies vues dans vos modules de formation pour structurer cette démarche.";
-        messagesContainer.appendChild(aiMsg);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 1000);
+        let reply = "C'est une excellente question pour votre projet. Pour structurer cela, commencez par identifier clairement la valeur unique que vous apportez à vos clients.";
+        const lower = text.toLowerCase();
+        
+        if (lower.includes('financement') || lower.includes('argent') || lower.includes('capital')) {
+            reply = "Pour trouver des financements, vous pouvez explorer le bootstrapping, les business angels locaux, ou préparer un dossier solide pour les institutions partenaires d'Arkas.";
+        } else if (lower.includes('client') || lower.includes('marche') || lower.includes('vente')) {
+            reply = "L'etude de marché passe par l'écoute active. Allez directement à la rencontre de 10 clients potentiels cette semaine pour valider leur besoin réel.";
+        }
+
+        box.innerHTML += `
+            <div class="chat-message bot">
+                <i class="fa-solid fa-robot"></i>
+                <p>${reply}</p>
+            </div>
+        `;
+        box.scrollTop = box.scrollHeight;
+    }, 800);
 }
 
-function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-        sendMessage();
+// --- LIKES ET COMMENTAIRES PUBLICS ---
+async function likeResource(resourceId) {
+    // Simple compteur dynamique local ou Supabase
+    const span = document.getElementById(`likes-${resourceId}`);
+    let current = parseInt(span.innerText) || 0;
+    current++;
+    span.innerText = current;
+
+    await supabaseClient
+        .from('resource_likes')
+        .upsert({ resource_id: resourceId, likes_count: current }, { onConflict: 'resource_id' });
+}
+
+async function addComment(resourceId) {
+    const input = document.getElementById(`comment-${resourceId}`);
+    const text = input.value.trim();
+    if (!text) return;
+
+    await supabaseClient
+        .from('resource_comments')
+        .insert([{ resource_id: resourceId, comment_text: text }]);
+
+    input.value = '';
+    loadComments(resourceId);
+}
+
+async function loadComments(resourceId) {
+    const { data } = await supabaseClient
+        .from('resource_comments')
+        .select('*')
+        .eq('resource_id', resourceId)
+        .order('created_at', { ascending: false });
+
+    const list = document.getElementById(`comments-list-${resourceId}`);
+    if (list && data) {
+        list.innerHTML = data.map(c => `<div>• ${c.comment_text}</div>`).join('');
     }
 }
 
-// --- GESTION DES QUESTIONS DE RÉFLEXION PERSONNELLE ---
-const reflectionData = [
-    { question: "Quel problème majeur du marché votre entreprise résout-elle concrètement pour vos futurs clients ?" },
-    { question: "Quelles sont les trois prochaines actions prioritaires que vous devez mener cette semaine pour avancer ?" }
-];
-
-let currentReflectionIndex = 0;
-
-function startReflection() {
-    document.getElementById('formation-menu').style.display = 'none';
-    document.getElementById('reflection-box').style.display = 'block';
-    currentReflectionIndex = 0;
-    loadReflectionQuestion();
-}
-
-function loadReflectionQuestion() {
-    if (currentReflectionIndex < reflectionData.length) {
-        const q = reflectionData[currentReflectionIndex];
-        document.getElementById('reflection-title').textContent = `Réflexion - Question ${currentReflectionIndex + 1} sur ${reflectionData.length}`;
-        document.getElementById('reflection-question').textContent = q.question;
-        document.getElementById('reflection-input').value = '';
-    } else {
-        document.getElementById('reflection-title').textContent = "Exercice Terminé 🎯";
-        document.getElementById('reflection-question').textContent = "Vous avez complété toutes les questions de réflexion pour ce module.";
-        document.getElementById('reflection-input').style.display = 'none';
-        document.querySelector('#reflection-box button').style.display = 'none';
-        document.getElementById('reflection-back').style.display = 'inline-block';
-    }
-}
-
-function saveReflectionAnswer() {
-    const answerText = document.getElementById('reflection-input').value.trim();
-    if (answerText === '') {
-        alert("Veuillez écrire une réponse avant d'enregistrer.");
-        return;
-    }
-
-    const currentQ = reflectionData[currentReflectionIndex].question;
-    saveReflectionToSupabase(currentQ, answerText);
-
-    currentReflectionIndex++;
-    loadReflectionQuestion();
-}
-
-function resetFormations() {
-    document.getElementById('reflection-box').style.display = 'none';
-    document.getElementById('formation-menu').style.display = 'grid';
-    document.getElementById('reflection-back').style.display = 'none';
-    document.getElementById('reflection-input').style.display = 'block';
-    document.querySelector('#reflection-box button').style.display = 'inline-block';
-}
+// Initialisation au chargement
+window.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+    loadComments('res_bp');
+});
