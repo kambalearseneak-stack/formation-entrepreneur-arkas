@@ -24,11 +24,15 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Clé API non configurée sur le serveur' });
         }
 
-        const contents = [];
+        // Construire l'historique au format de la nouvelle API
+        const input = [];
 
-        contents.push({
-            role: 'user',
-            parts: [{ text: `Tu es l'assistant IA d'Arkas, une plateforme d'accompagnement entrepreneurial destinée aux entrepreneurs francophones.
+        // Ajouter le contexte système
+        input.push({
+            type: 'user_input',
+            content: [{
+                type: 'text',
+                text: `Tu es l'assistant IA d'Arkas, une plateforme d'accompagnement entrepreneurial destinée aux entrepreneurs francophones.
 
 Ton rôle :
 - Aider les entrepreneurs à développer leur projet
@@ -37,41 +41,44 @@ Ton rôle :
 - Utiliser des listes et émojis pour la lisibilité
 - Être bienveillant, encourageant et professionnel
 
-Réponds toujours en français.` }]
+Réponds toujours en français.`
+            }]
         });
 
-        contents.push({
-            role: 'model',
-            parts: [{ text: "Compris ! Je suis prêt à aider les entrepreneurs." }]
-        });
-
+        // Ajouter l'historique si fourni
         if (history && Array.isArray(history)) {
             history.forEach(msg => {
-                contents.push({
-                    role: msg.role === 'user' ? 'user' : 'model',
-                    parts: [{ text: msg.text }]
+                input.push({
+                    type: 'user_input',
+                    content: [{ type: 'text', text: msg.role === 'user' ? msg.text : '' }]
                 });
+                if (msg.role === 'model') {
+                    input.push({
+                        type: 'model_output',
+                        content: [{ type: 'text', text: msg.text }]
+                    });
+                }
             });
         }
 
-        contents.push({
-            role: 'user',
-            parts: [{ text: message }]
+        // Ajouter le message actuel
+        input.push({
+            type: 'user_input',
+            content: [{ type: 'text', text: message }]
         });
 
-        // ✅ MODÈLE MIS À JOUR : gemini-3.8-flash
+        // Appel à la NOUVELLE API
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${API_KEY}`,
+            'https://generativelanguage.googleapis.com/v1beta/interactions',
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': API_KEY
+                },
                 body: JSON.stringify({
-                    contents: contents,
-                    generationConfig: {
-                        temperature: 0.8,
-                        maxOutputTokens: 1000,
-                        topP: 0.95,
-                    }
+                    model: 'gemini-3.8-flash',
+                    input: input
                 })
             }
         );
@@ -86,8 +93,16 @@ Réponds toujours en français.` }]
             });
         }
 
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 
-                     'Désolé, je n\'ai pas pu générer de réponse.';
+        // Extraire la réponse (nouveau format : steps[].content[].text)
+        let reply = 'Désolé, je n\'ai pas pu générer de réponse.';
+        
+        if (data.steps && Array.isArray(data.steps)) {
+            // Trouver l'étape de type model_output
+            const modelOutput = data.steps.find(step => step.type === 'model_output');
+            if (modelOutput && modelOutput.content && modelOutput.content[0]) {
+                reply = modelOutput.content[0].text || reply;
+            }
+        }
 
         return res.status(200).json({ reply });
 
