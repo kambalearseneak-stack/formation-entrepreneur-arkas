@@ -15,7 +15,7 @@
         <nav>
             <button onclick="switchSection('accueil', event)" class="active">Accueil</button>
             <button onclick="switchSection('ia', event)">Arcas Assistance IA</button>
-            <button onclick="switchSection('formations', event)">Formations & Quiz</button>
+            <button onclick="switchSection('formations', event)">Formations & Réflexion</button>
             <button onclick="switchSection('ressources', event)">Bibliothèque & Vidéos</button>
             <button onclick="switchSection('coaching', event)">Coaching & Mentorat</button>
             <button onclick="switchSection('taches', event)">Tâches & Outils</button>
@@ -29,8 +29,8 @@
             <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux avec un accompagnement intelligent.</p>
             <div class="card-grid">
                 <div class="card">
-                    <h3>🚀 Formations Actives</h3>
-                    <p>Suivez vos modules d'apprentissage et validez vos acquis en temps réel.</p>
+                    <h3>🚀 Formations & Réflexion</h3>
+                    <p>Suivez vos modules et consignez vos réflexions entrepreneuriales privées.</p>
                     <button class="btn-action" onclick="switchSection('formations', event)">Explorer</button>
                 </div>
                 <div class="card">
@@ -39,8 +39,8 @@
                     <button class="btn-action" onclick="switchSection('ia', event)">Discuter</button>
                 </div>
                 <div class="card">
-                    <h3>💡 Mentorat & Suivi</h3>
-                    <p>Bénéficiez de conseils d'experts sur mesure pour votre entreprise.</p>
+                    <h3>💡 Mentorat & Communauté</h3>
+                    <p>Rejoignez notre groupe WhatsApp et contactez notre service d'assistance.</p>
                     <button class="btn-action" onclick="switchSection('coaching', event)">Accéder</button>
                 </div>
             </div>
@@ -61,29 +61,35 @@
             </div>
         </section>
 
-        <!-- Formations & Quiz -->
+        <!-- Formations & Réflexion Personnelle -->
         <section id="formations" class="section-content">
-            <h2>Modules de Formation & Quiz</h2>
-            <p>Progressez pas à pas et testez vos connaissances avec nos quiz automatisés.</p>
+            <h2>Modules de Formation & Réflexion Personnelle</h2>
+            <p>Répondez à ces questions de compréhension pour structurer votre projet en toute confidentialité.</p>
             
             <div id="formation-menu" class="card-grid">
                 <div class="card">
-                    <h3>Module 1 : Fondations d'une Startup</h3>
-                    <p>Apprenez à structurer votre idée d'entreprise et analyser votre marché.</p>
-                    <button class="btn-action" onclick="startQuiz()">Lancer le Quiz</button>
+                    <h3>Module 1 : Vision & Analyse du Problème</h3>
+                    <p>Définissez clairement le besoin de vos futurs clients et votre proposition de valeur.</p>
+                    <button class="btn-action" onclick="startReflection()">Commencer l'exercice</button>
                 </div>
                 <div class="card">
-                    <h3>Module 2 : Stratégie Financière & Croissance</h3>
-                    <p>Maîtrisez les bases de la gestion de trésorerie et des investissements.</p>
+                    <h3>Module 2 : Stratégie & Croissance</h3>
+                    <p>Anticipez vos modèles de revenus et vos étapes de développement.</p>
                     <button class="btn-action" onclick="alert('Module disponible prochainement !')">Bientôt disponible</button>
                 </div>
             </div>
 
-            <div id="quiz-box" class="quiz-container" style="display: none;">
-                <h3 id="quiz-title">Quiz - Module 1</h3>
-                <p id="quiz-question" style="font-size: 1.1rem; margin: 20px 0;"></p>
-                <div class="quiz-options" id="quiz-options"></div>
-                <button class="btn-action" id="quiz-back" style="display:none; margin-top:15px;" onclick="resetFormations()">Retour aux modules</button>
+            <!-- Conteneur du questionnaire de réflexion (masqué par défaut) -->
+            <div id="reflection-box" class="quiz-container" style="display: none;">
+                <h3 id="reflection-title">Exercice - Module 1</h3>
+                <p id="reflection-question" style="font-size: 1.1rem; margin: 20px 0;"></p>
+                
+                <textarea id="reflection-input" rows="5" placeholder="Écrivez votre réponse personnelle ici..." style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); padding: 12px; border-radius: 8px; color: white; outline: none; box-sizing: border-box;"></textarea>
+                
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="btn-action" onclick="saveReflectionAnswer()">Enregistrer ma réponse en privé</button>
+                    <button class="btn-action" id="reflection-back" style="display:none; background: rgba(255,255,255,0.1);" onclick="resetFormations()">Retour aux modules</button>
+                </div>
             </div>
         </section>
 
@@ -105,14 +111,26 @@
             </div>
         </section>
 
-        <!-- Coaching & Mentorat -->
+        <!-- Coaching & Mentorat / Support -->
         <section id="coaching" class="section-content">
-            <h2>Espace Coaching & Mentorat</h2>
-            <p>Accédez à vos sessions de suivi personnalisé et organisez vos rendez-vous.</p>
-            <div class="card">
-                <h3>Prendre un rendez-vous mentor</h3>
-                <p>Discutez directement de l'avancement de votre projet d'entreprise avec un conseiller expert.</p>
-                <button class="btn-action" onclick="alert('Demande de rendez-vous enregistrée avec succès !')">Planifier une session</button>
+            <h2>Espace Coaching, Support & Communauté</h2>
+            <p>Connectez-vous directement avec notre équipe et les autres entrepreneurs.</p>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <h3>💬 Communauté WhatsApp</h3>
+                    <p>Échangez avec les membres et suivez les actualités en direct de la communauté Arkas.</p>
+                    <a href="https://chat.whatsapp.com/KMujAS0wQZW8EhXa3i4CPY" target="_blank">
+                        <button class="btn-action" style="margin-top: 15px;">Rejoindre le groupe WhatsApp</button>
+                    </a>
+                </div>
+
+                <div class="card">
+                    <h3>📞 Service Client & Assistance</h3>
+                    <p>Besoin d'aide ou d'un accompagnement personnalisé ? Contactez notre service dédié :</p>
+                    <p style="font-size: 1.2rem; font-weight: bold; color: #818cf8; margin: 15px 0;">0992769085</p>
+                    <button class="btn-action" onclick="alert('Numéro du service copié ou prêt à être joint : 0992769085')">Appeler le Support</button>
+                </div>
             </div>
         </section>
 
