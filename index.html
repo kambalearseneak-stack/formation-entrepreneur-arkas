@@ -6,18 +6,14 @@
     <title>Arkas - Plateforme d'Accompagnement Entrepreneurial</title>
     <meta name="description" content="Plateforme d'accompagnement pour entrepreneurs">
 
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Barre d'authentification -->
     <header class="top-auth-bar">
         <div class="brand-logo">
             <i class="fa-solid fa-rocket"></i> <span>ARKAS</span>
@@ -25,7 +21,6 @@
         <div id="auth-container" class="auth-wrapper"></div>
     </header>
 
-    <!-- Navigation -->
     <nav class="main-nav">
         <button class="nav-btn active" data-tab="home"><i class="fa-solid fa-house"></i> Accueil</button>
         <button class="nav-btn" data-tab="formations"><i class="fa-solid fa-book-open"></i> Formations</button>
@@ -35,7 +30,6 @@
         <button class="nav-btn" data-tab="carnet"><i class="fa-solid fa-pen-to-square"></i> Carnet</button>
     </nav>
 
-    <!-- Contenu -->
     <main class="app-container">
 
         <!-- ACCUEIL -->
@@ -43,7 +37,33 @@
             <div class="hero-card">
                 <h1>Bienvenue sur Arkas</h1>
                 <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux.</p>
+                <div class="hero-actions">
+                    <button class="btn-hero-primary" onclick="scrollToAuth()">
+                        <i class="fa-solid fa-user-plus"></i> Créer un compte
+                    </button>
+                    <button class="btn-hero-secondary" onclick="scrollToAuth()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Se connecter
+                    </button>
+                </div>
             </div>
+
+            <div id="auth-section-home" class="auth-section-home">
+                <h2><i class="fa-solid fa-user-plus"></i> Rejoignez Arkas</h2>
+                <p class="section-desc">Créez votre compte gratuit pour sauvegarder vos réflexions et progresser.</p>
+                <div class="auth-form-home">
+                    <input type="email" id="home-email" placeholder="Votre email...">
+                    <input type="password" id="home-password" placeholder="Mot de passe (min. 6 caractères)...">
+                    <div class="auth-buttons-home">
+                        <button class="btn-primary" onclick="handleSignupFromHome()">
+                            <i class="fa-solid fa-user-plus"></i> S'inscrire
+                        </button>
+                        <button class="btn-save" onclick="handleLoginFromHome()">
+                            <i class="fa-solid fa-right-to-bracket"></i> Se connecter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="cards-grid">
                 <div class="action-card" onclick="switchTab('formations')">
                     <i class="fa-solid fa-graduation-cap"></i>
@@ -91,13 +111,13 @@
 
         <!-- ASSISTANT IA -->
         <section id="assistant" class="tab-content">
-            <h2>Assistant IA Arkas</h2>
-            <p class="section-desc">Votre conseiller virtuel en entrepreneuriat.</p>
+            <h2>Assistant IA Arkas <span class="badge-ai"><i class="fa-solid fa-bolt"></i> Gemini</span></h2>
+            <p class="section-desc">Votre conseiller intelligent propulsé par Google Gemini.</p>
             <div class="chat-container">
                 <div id="chat-box" class="chat-box">
                     <div class="chat-message bot">
                         <i class="fa-solid fa-robot"></i>
-                        <p>Bonjour ! Je suis l'assistant Arkas. Posez-moi vos questions sur le business, le marketing, la gestion...</p>
+                        <p>Bonjour ! 👋 Je suis l'assistant IA d'Arkas, propulsé par Gemini. Posez-moi vos questions sur l'entrepreneuriat, le business, le marketing, la gestion ou tout autre sujet !</p>
                     </div>
                 </div>
                 <div class="chat-input-area">
@@ -144,23 +164,34 @@
         <!-- CARNET -->
         <section id="carnet" class="tab-content">
             <h2>Carnet de Bord</h2>
+            <p class="section-desc">Notez vos idées et tâches prioritaires. Sauvegardées automatiquement.</p>
             <div class="note-creator">
-                <textarea id="new-note" placeholder="Nouvelle note..."></textarea>
-                <button class="btn-primary" onclick="saveNote()">Ajouter</button>
+                <textarea id="new-note" placeholder="Nouvelle note ou tâche à accomplir..."></textarea>
+                <button class="btn-primary" onclick="saveNote()">
+                    <i class="fa-solid fa-plus"></i> Ajouter au carnet
+                </button>
             </div>
             <div id="notes-list" class="notes-grid"></div>
+            <div id="empty-notes" class="empty-state">
+                <i class="fa-solid fa-note-sticky"></i>
+                <p>Aucune note pour le moment. Commencez à écrire !</p>
+            </div>
         </section>
 
     </main>
 
-    <!-- Bouton flottant IA -->
     <div class="floating-ai-btn" onclick="switchTab('assistant')" title="Discuter avec l'IA" aria-label="Assistant IA">
         <i class="fa-solid fa-robot"></i>
         <span class="pulse-ring"></span>
     </div>
 
-    <!-- Scripts : config.js EN PREMIER, puis app.js -->
-    <script src="config.js"></script>
+    <script>
+        // Configuration Supabase (clé publique, protégée par RLS)
+        window.ARKAS_CONFIG = {
+            SUPABASE_URL: 'https://kdhchzkurngbgynpytrh.supabase.co',
+            SUPABASE_ANON_KEY: 'sb_publishable_atCUDbOqr6Cn9iDxSKbrWQ_w2sa0j_1'
+        };
+    </script>
     <script src="app.js"></script>
 </body>
 </html>
