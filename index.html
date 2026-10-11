@@ -17,8 +17,8 @@
             <button onclick="switchSection('ia', event)">Arcas Assistance IA</button>
             <button onclick="switchSection('formations', event)">Formations & Réflexion</button>
             <button onclick="switchSection('ressources', event)">Bibliothèque & Vidéos</button>
-            <button onclick="switchSection('coaching', event)">Coaching & Mentorat</button>
-            <button onclick="switchSection('taches', event)">Tâches & Outils</button>
+            <button onclick="switchSection('coaching', event)">Coaching & Communauté</button>
+            <button onclick="switchSection('taches', event)">Carnet de Bord & Tâches</button>
         </nav>
     </header>
 
@@ -93,25 +93,53 @@
             </div>
         </section>
 
-        <!-- Bibliothèque & Vidéos -->
+        <!-- Bibliothèque, Vidéos, Likes & Commentaires -->
         <section id="ressources" class="section-content">
-            <h2>Bibliothèque & Vidéos</h2>
-            <p>Retrouvez tous vos documents PDF, supports de cours et liens vidéo pour approfondir.</p>
+            <h2>Bibliothèque & Vidéothèque Publique</h2>
+            <p>Téléchargez les documents publics et participez aux discussions en laissant vos likes et commentaires.</p>
+            
             <div class="card-grid">
+                <!-- Livre / PDF 1 -->
                 <div class="card">
-                    <h3>📚 Guide de l'Entrepreneur (PDF)</h3>
-                    <p>Manuel complet sur la structuration de projet.</p>
-                    <button class="btn-action" onclick="alert('Téléchargement du guide PDF en cours...')">Télécharger le PDF</button>
+                    <h3>📚 Guide de l'Entrepreneur (PDF Public)</h3>
+                    <p>Manuel complet sur la structuration de projet open-source.</p>
+                    <a href="#" download target="_blank">
+                        <button class="btn-action" style="margin-top: 10px;">📥 Télécharger le PDF</button>
+                    </a>
+                    
+                    <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                        <button class="btn-action" onclick="likeItem('pdf1')" style="background: rgba(255,255,255,0.1);">❤️ J'aime (<span id="likes-pdf1">12</span>)</button>
+                        <div style="margin-top: 10px;">
+                            <input type="text" id="comment-pdf1" placeholder="Ajouter un commentaire..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius: 6px; color: white; box-sizing: border-box; margin-bottom: 5px;">
+                            <button class="btn-action" style="padding: 6px 12px; font-size: 0.9rem;" onclick="addComment('pdf1')">Commenter</button>
+                        </div>
+                        <div id="comments-list-pdf1" style="margin-top: 10px; font-size: 0.9rem; color: #cbd5e1;">
+                            <p style="margin: 4px 0; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 4px;">💬 <em>Jean :</em> Très instructif pour débuter !</p>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Vidéo 1 -->
                 <div class="card">
                     <h3>🎥 Conférence : Levée de Fonds</h3>
                     <p>Rediffusion de la session d'atelier stratégique.</p>
-                    <button class="btn-action" onclick="alert('Ouverture de la vidéothèque...')">Regarder la vidéo</button>
+                    <button class="btn-action" onclick="alert('Ouverture du lecteur vidéo...')">Regarder la vidéo</button>
+                    
+                    <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                        <button class="btn-action" onclick="likeItem('vid1')" style="background: rgba(255,255,255,0.1);">❤️ J'aime (<span id="likes-vid1">25</span>)</button>
+                        <div style="margin-top: 10px;">
+                            <input type="text" id="comment-vid1" placeholder="Ajouter un commentaire..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius: 6px; color: white; box-sizing: border-box; margin-bottom: 5px;">
+                            <button class="btn-action" style="padding: 6px 12px; font-size: 0.9rem;" onclick="addComment('vid1')">Commenter</button>
+                        </div>
+                        <div id="comments-list-vid1" style="margin-top: 10px; font-size: 0.9rem; color: #cbd5e1;">
+                            <p style="margin: 4px 0; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 4px;">💬 <em>Sarah :</em> Merci pour ces précieux conseils.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Coaching & Mentorat / Support -->
+        <!-- Coaching & Communauté / Support -->
         <section id="coaching" class="section-content">
             <h2>Espace Coaching, Support & Communauté</h2>
             <p>Connectez-vous directement avec notre équipe et les autres entrepreneurs.</p>
@@ -129,20 +157,26 @@
                     <h3>📞 Service Client & Assistance</h3>
                     <p>Besoin d'aide ou d'un accompagnement personnalisé ? Contactez notre service dédié :</p>
                     <p style="font-size: 1.2rem; font-weight: bold; color: #818cf8; margin: 15px 0;">0992769085</p>
-                    <button class="btn-action" onclick="alert('Numéro du service copié ou prêt à être joint : 0992769085')">Appeler le Support</button>
+                    <button class="btn-action" onclick="alert('Numéro du service prêt à être joint : 0992769085')">Appeler le Support</button>
                 </div>
             </div>
         </section>
 
-        <!-- Tâches & Outils -->
+        <!-- Carnet de Bord & Tâches -->
         <section id="taches" class="section-content">
-            <h2>Gestion des Tâches & Productivité</h2>
-            <p>Suivez vos actions prioritaires pour faire avancer votre projet pas à pas.</p>
+            <h2>Carnet de Bord & Tâches</h2>
+            <p>Consignez vos idées d'entreprise et suivez vos actions prioritaires en toute confidentialité.</p>
+            
+            <div class="card" style="margin-bottom: 20px;">
+                <h3>✍️ Nouvelle Note / Idée Business</h3>
+                <textarea id="noteInput" rows="3" placeholder="Notez une idée, un contact ou un rappel rapide..." style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); padding: 12px; border-radius: 8px; color: white; outline: none; box-sizing: border-box; margin-top: 10px;"></textarea>
+                <button class="btn-action" onclick="saveUserNote()">Enregistrer la note</button>
+            </div>
+
             <div class="card">
-                <h3>Mes Objectifs du Moment</h3>
+                <h3>📋 Mes Objectifs du Moment</h3>
                 <p>✅ Valider le Module 1 de formation</p>
                 <p>⏳ Finaliser le business plan</p>
-                <button class="btn-action" onclick="alert('Fonctionnalité d\'ajout de tâche bientôt connectée à Supabase !')">+ Ajouter une tâche</button>
             </div>
         </section>
     </main>
