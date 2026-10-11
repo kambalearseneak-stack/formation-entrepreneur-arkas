@@ -40,12 +40,17 @@
             -webkit-text-fill-color: transparent;
         }
 
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
         nav button {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 8px 16px;
-            margin-left: 10px;
+            padding: 8px 14px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -100,7 +105,7 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Styles spécifiques pour le Chat IA et les Quiz */
+        /* Chat IA */
         .chat-box {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -152,15 +157,6 @@
             outline: none;
         }
 
-        .chat-input-area button {
-            background: #6366f1;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
         .btn-action {
             background: #6366f1;
             color: white;
@@ -169,6 +165,39 @@
             border-radius: 8px;
             cursor: pointer;
             margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #4f46e5;
+        }
+
+        /* Section Quiz Interactif */
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .quiz-options button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-options button:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: #6366f1;
         }
     </style>
 </head>
@@ -182,11 +211,12 @@
             <button onclick="switchSection('formations', event)">Formations & Quiz</button>
             <button onclick="switchSection('ressources', event)">Bibliothèque & Vidéos</button>
             <button onclick="switchSection('coaching', event)">Coaching & Mentorat</button>
+            <button onclick="switchSection('taches', event)">Tâches & Outils</button>
         </nav>
     </header>
 
     <main>
-        <!-- Section Accueil -->
+        <!-- Accueil -->
         <section id="accueil" class="section-content active">
             <h2>Bienvenue sur Arkas</h2>
             <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux avec un accompagnement intelligent.</p>
@@ -209,7 +239,7 @@
             </div>
         </section>
 
-        <!-- Section IA -->
+        <!-- Arcas Assistance IA -->
         <section id="ia" class="section-content">
             <h2>Arcas Assistance IA</h2>
             <p>Votre assistant intelligent pour répondre à toutes vos interrogations en entrepreneuriat.</p>
@@ -219,30 +249,39 @@
                 </div>
                 <div class="chat-input-area">
                     <input type="text" id="userInput" placeholder="Posez votre question à Arcas Assistance IA..." onkeypress="handleKeyPress(event)">
-                    <button onclick="sendMessage()">Envoyer</button>
+                    <button class="btn-action" style="margin-top:0;" onclick="sendMessage()">Envoyer</button>
                 </div>
             </div>
         </section>
 
-        <!-- Section Formations -->
+        <!-- Formations & Quiz -->
         <section id="formations" class="section-content">
             <h2>Modules de Formation & Quiz</h2>
-            <p>Progressez pas à pas à travers les cours et testez vos connaissances.</p>
-            <div class="card-grid">
+            <p>Progressez pas à pas et testez vos connaissances avec nos quiz automatisés.</p>
+            
+            <div id="formation-menu" class="card-grid">
                 <div class="card">
                     <h3>Module 1 : Fondations d'une Startup</h3>
                     <p>Apprenez à structurer votre idée d'entreprise et analyser votre marché.</p>
-                    <button class="btn-action" onclick="alert('Lancement du Quiz Module 1 !')">Lancer le Quiz</button>
+                    <button class="btn-action" onclick="startQuiz()">Lancer le Quiz</button>
                 </div>
                 <div class="card">
                     <h3>Module 2 : Stratégie Financière & Croissance</h3>
                     <p>Maîtrisez les bases de la gestion de trésorerie et des investissements.</p>
-                    <button class="btn-action" onclick="alert('Lancement du Quiz Module 2 !')">Lancer le Quiz</button>
+                    <button class="btn-action" onclick="alert('Module disponible prochainement !')">Bientôt disponible</button>
                 </div>
+            </div>
+
+            <!-- Conteneur du Quiz interactif (masqué par défaut) -->
+            <div id="quiz-box" class="quiz-container" style="display: none;">
+                <h3 id="quiz-title">Quiz - Module 1</h3>
+                <p id="quiz-question" style="font-size: 1.1rem; margin: 20px 0;"></p>
+                <div class="quiz-options" id="quiz-options"></div>
+                <button class="btn-action" id="quiz-back" style="display:none; margin-top:15px;" onclick="resetFormations()">Retour aux modules</button>
             </div>
         </section>
 
-        <!-- Section Ressources -->
+        <!-- Bibliothèque & Vidéos -->
         <section id="ressources" class="section-content">
             <h2>Bibliothèque & Vidéos</h2>
             <p>Retrouvez tous vos documents PDF, supports de cours et liens vidéo.</p>
@@ -258,14 +297,26 @@
             </div>
         </section>
 
-        <!-- Section Coaching -->
+        <!-- Coaching & Mentorat -->
         <section id="coaching" class="section-content">
             <h2>Espace Coaching & Mentorat</h2>
             <p>Accédez à vos sessions de suivi personnalisé et organisez vos rendez-vous.</p>
             <div class="card">
                 <h3>Prendre un rendez-vous mentor</h3>
                 <p>Discutez directement de l'avancement de votre projet d'entreprise avec un conseiller expert.</p>
-                <button class="btn-action" onclick="alert('Demande de rendez-vous enregistrée !')">Planifier une session</button>
+                <button class="btn-action" onclick="alert('Demande de rendez-vous enregistrée avec succès !')">Planifier une session</button>
+            </div>
+        </section>
+
+        <!-- Tâches & Outils -->
+        <section id="taches" class="section-content">
+            <h2>Gestion des Tâches & Productivité</h2>
+            <p>Suivez vos actions prioritaires pour faire avancer votre projet pas à pas.</p>
+            <div class="card">
+                <h3>Mes Objectifs du Moment</h3>
+                <p>✅ Valider le Module 1 de formation</p>
+                <p>⏳ Finaliser le business plan</p>
+                <button class="btn-action" onclick="alert('Fonctionnalité d\'ajout de tâche bientôt connectée à Supabase !')">+ Ajouter une tâche</button>
             </div>
         </section>
     </main>
@@ -280,20 +331,18 @@
 
             document.getElementById(sectionId).classList.add('active');
             
-            // Gestion propre du clic sur un bouton de navigation ou une carte
-            if (event && event.target.tagName === 'BUTTON' && event.target.closest('nav')) {
+            if (event && event.target.tagName === 'BUTTON') {
                 event.target.classList.add('active');
             }
         }
 
-        // Logique de simulation pour le chat avec l'IA
+        // Chat IA interactif
         function sendMessage() {
             const input = document.getElementById('userInput');
             const messagesContainer = document.getElementById('chatMessages');
             
             if (input.value.trim() === '') return;
 
-            // Message utilisateur
             const userMsg = document.createElement('div');
             userMsg.className = 'message user';
             userMsg.textContent = input.value;
@@ -303,11 +352,10 @@
             input.value = '';
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Réponse simulée d'Arcas Assistance IA
             setTimeout(() => {
                 const aiMsg = document.createElement('div');
                 aiMsg.className = 'message ai';
-                aiMsg.textContent = "J'analyse votre question concernant \"" + userText + "\". En tant qu'Arcas Assistance IA, je vous conseille de structurer votre plan d'action par étape et de valider vos modules de formation associés.";
+                aiMsg.textContent = "J'analyse votre question (\"" + userText + "\"). En tant qu'Arcas Assistance IA, je vous suggère d'appliquer les méthodologies vues dans vos modules de formation pour structurer cette démarche.";
                 messagesContainer.appendChild(aiMsg);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }, 1000);
@@ -317,6 +365,76 @@
             if (event.key === 'Enter') {
                 sendMessage();
             }
+        }
+
+        // Système de Quiz Intégré
+        const quizData = [
+            {
+                question: "Quelle est la première étape essentielle pour lancer un projet entrepreneurial solide ?",
+                options: [
+                    "Acheter un local commercial immédiatement",
+                    "Identifier un vrai problème client et analyser le marché",
+                    "Embaucher une grande équipe sans plan"
+                ],
+                correct: 1
+            },
+            {
+                question: "À quoi sert principalement le tableau de bord analytique sur Arkas ?",
+                options: [
+                    "À suivre la progression des modules et la réussite des quiz",
+                    "À jouer à des jeux vidéo",
+                    "À modifier le code source du site"
+                ],
+                correct: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function startQuiz() {
+            document.getElementById('formation-menu').style.display = 'none';
+            document.getElementById('quiz-box').style.display = 'block';
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion < quizData.length) {
+                const q = quizData[currentQuestion];
+                document.getElementById('quiz-title').textContent = `Quiz - Question ${currentQuestion + 1} sur ${quizData.length}`;
+                document.getElementById('quiz-question').textContent = q.question;
+                
+                const optionsContainer = document.getElementById('quiz-options');
+                optionsContainer.innerHTML = '';
+                
+                q.options.forEach((opt, index) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = opt;
+                    btn.onclick = () => selectAnswer(index);
+                    optionsContainer.appendChild(btn);
+                });
+            } else {
+                document.getElementById('quiz-title').textContent = "Résultat du Quiz 🎯";
+                document.getElementById('quiz-question').textContent = `Vous avez terminé le quiz avec un score de ${score} / ${quizData.length} !`;
+                document.getElementById('quiz-options').innerHTML = "<p style='color:#818cf8;'>Félicitations pour votre progression entrepreneuriale !</p>";
+                document.getElementById('quiz-back').style.display = 'inline-block';
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (selectedIndex === quizData[currentQuestion].correct) {
+                score++;
+            }
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function resetFormations() {
+            document.getElementById('quiz-box').style.display = 'none';
+            document.getElementById('formation-menu').style.display = 'grid';
+            document.getElementById('quiz-back').style.display = 'none';
         }
     </script>
 </body>
