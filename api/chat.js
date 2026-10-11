@@ -77,7 +77,7 @@ Réponds toujours en français.`
                     'x-goog-api-key': API_KEY
                 },
                 body: JSON.stringify({
-                    model: 'gemini-1.5-flash',
+                    model: 'gemini-3.8-flash',
                     input: input
                 })
             }
