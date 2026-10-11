@@ -19,8 +19,8 @@
         <div class="brand-logo">
             <i class="fa-solid fa-rocket"></i> <span>ARKAS</span>
         </div>
-        <div id="auth-container">
-            <!-- Dynamique via JS : Formulaire Connexion / Inscription ou Profil utilisateur -->
+        <div id="auth-container" class="auth-wrapper">
+            <!-- Injecté dynamiquement par JS -->
         </div>
     </header>
 
@@ -88,12 +88,12 @@
         <!-- ONGLET ASSISTANT IA -->
         <section id="assistant" class="tab-content">
             <h2>Assistant IA Arkas</h2>
-            <p class="section-desc">Votre conseiller virtuel spécialisé en entrepreneuriat.</p>
+            <p class="section-desc">Votre conseiller virtuel spécialisé en stratégie et entrepreneuriat.</p>
             <div class="chat-container">
                 <div id="chat-box" class="chat-box">
                     <div class="chat-message bot">
                         <i class="fa-solid fa-robot"></i>
-                        <p>Bonjour ! Je suis l'assistant Arkas. Comment puis-je vous aider à structurer ou développer votre entreprise aujourd'hui ?</p>
+                        <p>Bonjour ! Je suis l'assistant Arkas. Posez-moi vos questions sur le business plan, le marketing, la gestion ou la recherche de clients.</p>
                     </div>
                 </div>
                 <div class="chat-input-area">
@@ -134,7 +134,7 @@
                 <i class="fa-brands fa-whatsapp whatsapp-icon"></i>
                 <h3>Rejoignez le groupe WhatsApp officiel</h3>
                 <p>Échangez avec d'autres entrepreneurs, posez vos questions aux coachs et recevez des alertes en direct.</p>
-                <a href="https://chat.whatsapp.com/votre-lien-groupe" target="_blank" class="btn-whatsapp">Rejoindre le groupe</a>
+                <a href="https://chat.whatsapp.com/KMujAS0wQZW8EhXa3i4CPY" target="_blank" class="btn-whatsapp">Rejoindre le groupe</a>
             </div>
         </section>
 
@@ -151,13 +151,12 @@
 
     </main>
 
-    <!-- Bouton Flottant Assistant IA (Visible partout) -->
+    <!-- Bouton Flottant Assistant IA -->
     <div class="floating-ai-btn" onclick="switchTab('assistant')" title="Discuter avec l'IA">
         <i class="fa-solid fa-robot"></i>
         <span class="pulse-ring"></span>
     </div>
 
-    <!-- Script principal de l'application -->
     <script src="app.js"></script>
 </body>
 </html>
