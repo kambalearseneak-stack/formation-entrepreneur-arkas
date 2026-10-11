@@ -24,10 +24,8 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Clé API non configurée sur le serveur' });
         }
 
-        // Construire l'historique
         const contents = [];
 
-        // Contexte système
         contents.push({
             role: 'user',
             parts: [{ text: `Tu es l'assistant IA d'Arkas, une plateforme d'accompagnement entrepreneurial destinée aux entrepreneurs francophones.
@@ -38,18 +36,15 @@ Ton rôle :
 - Donner des conseils concrets et actionnables
 - Utiliser des listes et émojis pour la lisibilité
 - Être bienveillant, encourageant et professionnel
-- Si la question ne concerne pas l'entrepreneuriat, tu peux quand même répondre poliment
 
 Réponds toujours en français.` }]
         });
 
-        // Ajouter modèle
         contents.push({
             role: 'model',
-            parts: [{ text: "Compris ! Je suis prêt à aider les entrepreneurs avec leurs questions." }]
+            parts: [{ text: "Compris ! Je suis prêt à aider les entrepreneurs." }]
         });
 
-        // Historique
         if (history && Array.isArray(history)) {
             history.forEach(msg => {
                 contents.push({
@@ -59,14 +54,14 @@ Réponds toujours en français.` }]
             });
         }
 
-        // Message actuel
         contents.push({
             role: 'user',
             parts: [{ text: message }]
         });
 
+        // ✅ MODÈLE MIS À JOUR : gemini-3.8-flash
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${API_KEY}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
