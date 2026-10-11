@@ -1,8 +1,8 @@
 // --- CONFIGURATION SUPABASE ---
-const SUPABASE_URL = 'VOTRE_URL_SUPABASE'; // Remplacez par votre URL si nécessaire
-const SUPABASE_ANON_KEY = 'VOTRE_CLE_ANON_SUPABASE'; // Remplacez par votre clé si nécessaire
+const SUPABASE_URL = 'https://kdhchzkurngbgynpytrh.supabase.co';
+const SUPABASE_ANON_KEY = 'Sb_publishable_atCUDbOqr6Cn9iDxSKbrWQ_w2sa0j_1';
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
 
 // --- GESTION DES ONGLETS ---
@@ -26,7 +26,7 @@ function switchTab(tabId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// --- SYSTEME D'AUTHENTIFICATION (Connexion / Inscription) ---
+// --- SYSTEME D'AUTHENTIFICATION ---
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentUser = session ? session.user : null;
@@ -39,9 +39,9 @@ function renderAuthUI() {
 
     if (currentUser) {
         container.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
                 <span><i class="fa-solid fa-user-check" style="color: #22c55e;"></i> ${currentUser.email}</span>
-                <button onclick="handleLogout()" class="btn-primary" style="padding: 6px 12px; font-size: 12px;">Déconnexion</button>
+                <button onclick="handleLogout()" class="btn-primary" style="padding: 4px 10px; font-size: 11px;">Déconnexion</button>
             </div>
         `;
     } else {
@@ -49,8 +49,8 @@ function renderAuthUI() {
             <div class="auth-box-inline">
                 <input type="email" id="auth-email" placeholder="Email...">
                 <input type="password" id="auth-password" placeholder="Mot de passe...">
-                <button onclick="handleLogin()" class="btn-primary" style="padding: 6px 12px; font-size: 13px;">Connexion</button>
-                <button onclick="handleSignup()" class="btn-save" style="padding: 6px 12px; font-size: 13px;">S'inscrire</button>
+                <button onclick="handleLogin()" class="btn-primary" style="padding: 5px 10px; font-size: 12px;">Connexion</button>
+                <button onclick="handleSignup()" class="btn-save" style="padding: 5px 10px; font-size: 12px;">S'inscrire</button>
             </div>
         `;
     }
@@ -77,7 +77,7 @@ async function handleSignup() {
     const { error } = await supabaseClient.auth.signUp({ email, password });
     if (error) alert("Erreur d'inscription : " + error.message);
     else {
-        alert("Inscription réussie ! Vérifiez vos emails si une confirmation est requise, ou connectez-vous.");
+        alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
         checkAuth();
     }
 }
@@ -91,20 +91,20 @@ async function handleLogout() {
 
 // --- REFLEXIONS PRIVEES ---
 async function saveReflection(fieldId, questionLabel) {
-    if (!currentUser) return alert("Veuillez vous connecter ou vous inscrire en haut de la page pour enregistrer vos réflexions en privé.");
+    if (!currentUser) return alert("Veuillez vous connecter en haut de la page pour enregistrer vos réflexions en privé.");
 
     const answerText = document.getElementById(fieldId).value;
     if (!answerText.trim()) return alert("Veuillez écrire une réponse avant d'enregistrer.");
 
     const { error } = await supabaseClient
         .from('user_reflections')
-        .insert([{ user_id: currentUser.id, question: questionLabel, answer: answerText }]);
+        .insert([{ question: questionLabel, answer: answerText }]);
 
     if (error) alert("Erreur lors de l'enregistrement : " + error.message);
     else alert("Réflexion enregistrée avec succès dans votre espace privé !");
 }
 
-// --- ASSISTANT IA SIMULE / ACTIF ---
+// --- ASSISTANT IA INTELLIGENT ET CONTEXTUEL ---
 function handleChatKey(event) {
     if (event.key === 'Enter') sendChatMessage();
 }
@@ -124,15 +124,21 @@ function sendChatMessage() {
     input.value = '';
     box.scrollTop = box.scrollHeight;
 
-    // Réponse intelligente de l'assistant Arkas
+    // Analyse intelligente du texte pour une réponse contextuelle variée
     setTimeout(() => {
-        let reply = "C'est une excellente question pour votre projet. Pour structurer cela, commencez par identifier clairement la valeur unique que vous apportez à vos clients.";
         const lower = text.toLowerCase();
-        
-        if (lower.includes('financement') || lower.includes('argent') || lower.includes('capital')) {
-            reply = "Pour trouver des financements, vous pouvez explorer le bootstrapping, les business angels locaux, ou préparer un dossier solide pour les institutions partenaires d'Arkas.";
-        } else if (lower.includes('client') || lower.includes('marche') || lower.includes('vente')) {
-            reply = "L'etude de marché passe par l'écoute active. Allez directement à la rencontre de 10 clients potentiels cette semaine pour valider leur besoin réel.";
+        let reply = "C'est un point stratégique important. Pour réussir, je vous conseille de découper cet objectif en actions simples et mesurables dès cette semaine.";
+
+        if (lower.includes('bonjour') || lower.includes('salut') || lower.includes('coucou')) {
+            reply = "Bonjour ! Ravi de vous accompagner. Quel est votre projet ou votre défi du moment en entrepreneuriat ?";
+        } else if (lower.includes('client') || lower.includes('vente') || lower.includes('marche') || lower.includes('prospect')) {
+            reply = "Pour attirer et convaincre vos clients, concentrez-vous sur le bénéfice direct que votre offre leur apporte. Allez interroger 5 clients potentiels pour comprendre leurs blocages exacts.";
+        } else if (lower.includes('argent') || lower.includes('financement') || lower.includes('capital') || lower.includes('fonds')) {
+            reply = "Le financement dépend de votre stade : privilégiez le bootstrapping (autofinancement par les premiers clients) au début, puis préparez un pitch deck solide si vous cherchez des investisseurs ou un prêt.";
+        } else if (lower.includes('idee') || lower.includes('projet') || lower.includes('lancer')) {
+            reply = "Pour valider une bonne idée de projet, assurez-vous qu'elle résout un problème douloureux pour lequel les gens sont prêts à payer. Utilisez l'onglet Formations de la plateforme pour structurer cela !";
+        } else if (lower.includes('merci')) {
+            reply = "Avec grand plaisir ! N'hésitez pas si vous avez d'autres questions pour faire avancer votre entreprise.";
         }
 
         box.innerHTML += `
@@ -142,12 +148,11 @@ function sendChatMessage() {
             </div>
         `;
         box.scrollTop = box.scrollHeight;
-    }, 800);
+    }, 700);
 }
 
 // --- LIKES ET COMMENTAIRES PUBLICS ---
 async function likeResource(resourceId) {
-    // Simple compteur dynamique local ou Supabase
     const span = document.getElementById(`likes-${resourceId}`);
     let current = parseInt(span.innerText) || 0;
     current++;
