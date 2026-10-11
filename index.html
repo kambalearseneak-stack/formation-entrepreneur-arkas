@@ -81,7 +81,7 @@
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -98,6 +98,77 @@
         .card:hover {
             transform: translateY(-5px);
             border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Styles spécifiques pour le Chat IA et les Quiz */
+        .chat-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 10px;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .message.ai {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            align-self: flex-start;
+        }
+
+        .message.user {
+            background: rgba(255, 255, 255, 0.1);
+            margin-left: auto;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+
+        .chat-input-area button {
+            background: #6366f1;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-action {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -123,14 +194,17 @@
                 <div class="card">
                     <h3>🚀 Formations Actives</h3>
                     <p>Suivez vos modules d'apprentissage et validez vos acquis en temps réel.</p>
+                    <button class="btn-action" onclick="switchSection('formations', event)">Explorer</button>
                 </div>
                 <div class="card">
                     <h3>🤖 Arcas Assistance IA</h3>
                     <p>Posez vos questions business 24/7 à votre assistant dédié.</p>
+                    <button class="btn-action" onclick="switchSection('ia', event)">Discuter</button>
                 </div>
                 <div class="card">
                     <h3>💡 Mentorat & Suivi</h3>
                     <p>Bénéficiez de conseils d'experts sur mesure pour votre entreprise.</p>
+                    <button class="btn-action" onclick="switchSection('coaching', event)">Accéder</button>
                 </div>
             </div>
         </section>
@@ -138,28 +212,61 @@
         <!-- Section IA -->
         <section id="ia" class="section-content">
             <h2>Arcas Assistance IA</h2>
-            <p>Discutez en direct avec l'intelligence artificielle pour résoudre vos problématiques entrepreneuriales.</p>
-            <div class="card" style="height: 300px; display: flex; flex-direction: column; justify-content: flex-end;">
-                <p style="color: #94a3b8;">[Fenêtre de chat avec Arcas Assistance IA en cours de chargement...]</p>
+            <p>Votre assistant intelligent pour répondre à toutes vos interrogations en entrepreneuriat.</p>
+            <div class="chat-box">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai">Bonjour ! Je suis Arcas Assistance IA. Comment puis-je vous aider à faire croître votre entreprise aujourd'hui ?</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="Posez votre question à Arcas Assistance IA..." onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()">Envoyer</button>
+                </div>
             </div>
         </section>
 
         <!-- Section Formations -->
         <section id="formations" class="section-content">
             <h2>Modules de Formation & Quiz</h2>
-            <p>Progressez pas à pas à travers les plans de cours et testez vos connaissances.</p>
+            <p>Progressez pas à pas à travers les cours et testez vos connaissances.</p>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Module 1 : Fondations d'une Startup</h3>
+                    <p>Apprenez à structurer votre idée d'entreprise et analyser votre marché.</p>
+                    <button class="btn-action" onclick="alert('Lancement du Quiz Module 1 !')">Lancer le Quiz</button>
+                </div>
+                <div class="card">
+                    <h3>Module 2 : Stratégie Financière & Croissance</h3>
+                    <p>Maîtrisez les bases de la gestion de trésorerie et des investissements.</p>
+                    <button class="btn-action" onclick="alert('Lancement du Quiz Module 2 !')">Lancer le Quiz</button>
+                </div>
+            </div>
         </section>
 
         <!-- Section Ressources -->
         <section id="ressources" class="section-content">
             <h2>Bibliothèque & Vidéos</h2>
             <p>Retrouvez tous vos documents PDF, supports de cours et liens vidéo.</p>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>📚 Guides & E-books PDF</h3>
+                    <p>Téléchargez les documentations officielles de l'académie.</p>
+                </div>
+                <div class="card">
+                    <h3>🎥 Conférences & Webinaires</h3>
+                    <p>Visualisez les rediffusions des sessions passées.</p>
+                </div>
+            </div>
         </section>
 
         <!-- Section Coaching -->
         <section id="coaching" class="section-content">
             <h2>Espace Coaching & Mentorat</h2>
             <p>Accédez à vos sessions de suivi personnalisé et organisez vos rendez-vous.</p>
+            <div class="card">
+                <h3>Prendre un rendez-vous mentor</h3>
+                <p>Discutez directement de l'avancement de votre projet d'entreprise avec un conseiller expert.</p>
+                <button class="btn-action" onclick="alert('Demande de rendez-vous enregistrée !')">Planifier une session</button>
+            </div>
         </section>
     </main>
 
@@ -172,7 +279,44 @@
             buttons.forEach(btn => btn.classList.remove('active'));
 
             document.getElementById(sectionId).classList.add('active');
-            event.target.classList.add('active');
+            
+            // Gestion propre du clic sur un bouton de navigation ou une carte
+            if (event && event.target.tagName === 'BUTTON' && event.target.closest('nav')) {
+                event.target.classList.add('active');
+            }
+        }
+
+        // Logique de simulation pour le chat avec l'IA
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            if (input.value.trim() === '') return;
+
+            // Message utilisateur
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.textContent = input.value;
+            messagesContainer.appendChild(userMsg);
+
+            const userText = input.value;
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Réponse simulée d'Arcas Assistance IA
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai';
+                aiMsg.textContent = "J'analyse votre question concernant \"" + userText + "\". En tant qu'Arcas Assistance IA, je vous conseille de structurer votre plan d'action par étape et de valider vos modules de formation associés.";
+                messagesContainer.appendChild(aiMsg);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
         }
     </script>
 </body>
