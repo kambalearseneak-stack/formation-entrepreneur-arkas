@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <!-- Barre d'authentification (affichage utilisateur connecté) -->
+    <!-- Barre d'authentification -->
     <header class="top-auth-bar">
         <div class="brand-logo">
             <i class="fa-solid fa-rocket"></i> <span>ARKAS</span>
@@ -194,13 +194,13 @@
 
     </main>
 
-    <div class="floating-ai-btn" onclick="switchTab('assistant')" title="Discuter avec l'IA" aria-label="Assistant IA">
+    <!-- ✅ Bouton flottant déplaçable -->
+    <div id="floating-ai-btn" class="floating-ai-btn" title="Discuter avec l'IA (glisser pour déplacer)" aria-label="Assistant IA">
         <i class="fa-solid fa-robot"></i>
         <span class="pulse-ring"></span>
     </div>
 
     <script>
-        // Configuration Supabase (clé publique, protégée par RLS)
         window.ARKAS_CONFIG = {
             SUPABASE_URL: 'https://kdhchzkurngbgynpytrh.supabase.co',
             SUPABASE_ANON_KEY: 'sb_publishable_atCUDbOqr6Cn9iDxSKbrWQ_w2sa0j_1'
