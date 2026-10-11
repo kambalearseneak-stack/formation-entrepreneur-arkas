@@ -34,12 +34,15 @@ function switchTab(tabId) {
     if (activeBtn) activeBtn.classList.add('active');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // ✅ Mettre à jour la visibilité du bouton flottant
+    updateFloatingButtonVisibility();
 }
 
 // ============================================
-// AUTHENTIFICATION AVEC OVERLAY
+// AUTHENTIFICATION
 // ============================================
-let overlayMode = 'login'; // 'login' ou 'signup'
+let overlayMode = 'login';
 
 async function checkAuth() {
     try {
@@ -47,7 +50,6 @@ async function checkAuth() {
         currentUser = session ? session.user : null;
         renderAuthUI();
         
-        // Afficher ou cacher l'overlay selon l'état de connexion
         const overlay = document.getElementById('login-overlay');
         if (overlay) {
             if (currentUser) {
@@ -61,7 +63,6 @@ async function checkAuth() {
     }
 }
 
-// Basculer entre Connexion et Inscription dans l'overlay
 function switchLoginTab(mode) {
     overlayMode = mode;
     
@@ -83,23 +84,19 @@ function switchLoginTab(mode) {
         passwordInput.setAttribute('autocomplete', 'new-password');
     }
     
-    // Vider le message
     message.textContent = '';
     message.className = 'overlay-message';
 }
 
-// Soumettre depuis l'overlay (connexion ou inscription)
 async function handleOverlaySubmit() {
     const email = document.getElementById('overlay-email').value.trim();
     const password = document.getElementById('overlay-password').value;
     const message = document.getElementById('overlay-message');
     const submitBtn = document.getElementById('overlay-submit');
     
-    // Vider le message précédent
     message.textContent = '';
     message.className = 'overlay-message';
     
-    // Validation
     if (!email || !password) {
         message.textContent = 'Veuillez remplir tous les champs.';
         message.className = 'overlay-message error';
@@ -112,14 +109,12 @@ async function handleOverlaySubmit() {
         return;
     }
     
-    // Désactiver le bouton pendant le traitement
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Traitement...';
     submitBtn.disabled = true;
     
     try {
         if (overlayMode === 'signup') {
-            // Inscription
             const { error } = await supabaseClient.auth.signUp({ email, password });
             
             if (error) {
@@ -129,7 +124,6 @@ async function handleOverlaySubmit() {
                 message.textContent = '✅ Inscription réussie ! Connexion en cours...';
                 message.className = 'overlay-message success';
                 
-                // Connexion automatique après inscription
                 const { error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password });
                 
                 if (loginError) {
@@ -137,14 +131,12 @@ async function handleOverlaySubmit() {
                     message.className = 'overlay-message success';
                     switchLoginTab('login');
                 } else {
-                    // Connexion réussie, fermer l'overlay
                     await checkAuth();
                     document.getElementById('overlay-email').value = '';
                     document.getElementById('overlay-password').value = '';
                 }
             }
         } else {
-            // Connexion
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
             
             if (error) {
@@ -170,7 +162,6 @@ async function handleOverlaySubmit() {
     }
 }
 
-// Afficher l'utilisateur connecté dans le header
 function renderAuthUI() {
     const container = document.getElementById('auth-container');
     if (!container) return;
@@ -193,13 +184,11 @@ async function handleLogout() {
     currentUser = null;
     renderAuthUI();
     
-    // Réafficher l'overlay
     const overlay = document.getElementById('login-overlay');
     if (overlay) {
         overlay.classList.remove('hidden');
     }
     
-    // Réinitialiser l'overlay
     switchLoginTab('login');
     document.getElementById('overlay-email').value = '';
     document.getElementById('overlay-password').value = '';
@@ -249,7 +238,6 @@ async function sendChatMessage() {
     const text = input.value.trim();
     if (!text) return;
 
-    // Message utilisateur
     box.innerHTML += `
         <div class="chat-message user">
             <p>${escapeHtml(text)}</p>
@@ -258,7 +246,6 @@ async function sendChatMessage() {
     input.value = '';
     box.scrollTop = box.scrollHeight;
 
-    // Indicateur de réflexion
     const typingId = 'typing-' + Date.now();
     box.innerHTML += `
         <div class="chat-message bot" id="${typingId}">
@@ -426,10 +413,128 @@ function deleteNote(noteId) {
 }
 
 // ============================================
+// ✅ BOUTON FLOTTANT DÉPLAÇABLE
+// ============================================
+function initFloatingButton() {
+    const btn = document.getElementById('floating-ai-btn');
+    if (!btn) return;
+
+    let isDragging = false;
+    let hasMoved = false;
+    let startX, startY, startLeft, startTop;
+
+    // Charger la position sauvegardée
+    const savedPos = localStorage.getItem('arkas_fab_position');
+    if (savedPos) {
+        try {
+            const pos = JSON.parse(savedPos);
+            btn.style.left = pos.left + 'px';
+            btn.style.top = pos.top + 'px';
+            btn.style.right = 'auto';
+            btn.style.bottom = 'auto';
+        } catch (e) {
+            console.error('Erreur chargement position FAB:', e);
+        }
+    }
+
+    function getEventCoords(e) {
+        if (e.touches && e.touches.length > 0) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    }
+
+    function onDragStart(e) {
+        if (e.target.closest('a, button')) return;
+        
+        isDragging = true;
+        hasMoved = false;
+
+        const coords = getEventCoords(e);
+        const rect = btn.getBoundingClientRect();
+
+        startX = coords.x;
+        startY = coords.y;
+        startLeft = rect.left;
+        startTop = rect.top;
+
+        btn.style.left = startLeft + 'px';
+        btn.style.top = startTop + 'px';
+        btn.style.right = 'auto';
+        btn.style.bottom = 'auto';
+        btn.classList.add('dragging');
+    }
+
+    function onDragMove(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+
+        const coords = getEventCoords(e);
+        const deltaX = coords.x - startX;
+        const deltaY = coords.y - startY;
+
+        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+            hasMoved = true;
+        }
+
+        let newLeft = startLeft + deltaX;
+        let newTop = startTop + deltaY;
+
+        const maxLeft = window.innerWidth - btn.offsetWidth;
+        const maxTop = window.innerHeight - btn.offsetHeight;
+
+        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+        newTop = Math.max(0, Math.min(newTop, maxTop));
+
+        btn.style.left = newLeft + 'px';
+        btn.style.top = newTop + 'px';
+    }
+
+    function onDragEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        btn.classList.remove('dragging');
+
+        // Sauvegarder la position
+        const rect = btn.getBoundingClientRect();
+        localStorage.setItem('arkas_fab_position', JSON.stringify({
+            left: rect.left,
+            top: rect.top
+        }));
+
+        // Si pas bougé = clic
+        if (!hasMoved) {
+            switchTab('assistant');
+        }
+    }
+
+    // Événements souris
+    btn.addEventListener('mousedown', onDragStart);
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+
+    // Événements tactiles
+    btn.addEventListener('touchstart', onDragStart, { passive: false });
+    document.addEventListener('touchmove', onDragMove, { passive: false });
+    document.addEventListener('touchend', onDragEnd);
+}
+
+function updateFloatingButtonVisibility() {
+    const btn = document.getElementById('floating-ai-btn');
+    if (!btn) return;
+    
+    const assistantTab = document.getElementById('assistant');
+    if (assistantTab && assistantTab.classList.contains('active')) {
+        btn.classList.add('hidden-on-assistant');
+    } else {
+        btn.classList.remove('hidden-on-assistant');
+    }
+}
+
+// ============================================
 // INITIALISATION
 // ============================================
 window.addEventListener('DOMContentLoaded', () => {
-    // Écouteur pour la touche Entrée dans l'overlay
     const emailInput = document.getElementById('overlay-email');
     const passwordInput = document.getElementById('overlay-password');
     
@@ -441,8 +546,11 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Vérifier l'auth, charger les commentaires et les notes
     checkAuth();
     loadComments('res_bp');
     renderNotes();
+    
+    // ✅ Initialiser le bouton flottant
+    initFloatingButton();
+    updateFloatingButtonVisibility();
 });
