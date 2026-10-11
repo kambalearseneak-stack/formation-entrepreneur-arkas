@@ -4,27 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arkas - Plateforme d'Accompagnement Entrepreneurial</title>
-    <!-- FontAwesome pour les icônes -->
+    <meta name="description" content="Plateforme d'accompagnement pour entrepreneurs">
+
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Barre d'authentification en haut -->
+    <!-- Barre d'authentification -->
     <header class="top-auth-bar">
         <div class="brand-logo">
             <i class="fa-solid fa-rocket"></i> <span>ARKAS</span>
         </div>
-        <div id="auth-container" class="auth-wrapper">
-            <!-- Injecté dynamiquement par JS -->
-        </div>
+        <div id="auth-container" class="auth-wrapper"></div>
     </header>
 
-    <!-- Navigation Principale -->
+    <!-- Navigation -->
     <nav class="main-nav">
         <button class="nav-btn active" data-tab="home"><i class="fa-solid fa-house"></i> Accueil</button>
         <button class="nav-btn" data-tab="formations"><i class="fa-solid fa-book-open"></i> Formations</button>
@@ -34,129 +35,132 @@
         <button class="nav-btn" data-tab="carnet"><i class="fa-solid fa-pen-to-square"></i> Carnet</button>
     </nav>
 
-    <!-- Contenu de l'application -->
+    <!-- Contenu -->
     <main class="app-container">
 
-        <!-- ONGLET ACCUEIL -->
+        <!-- ACCUEIL -->
         <section id="home" class="tab-content active">
             <div class="hero-card">
                 <h1>Bienvenue sur Arkas</h1>
-                <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux avec un accompagnement intelligent.</p>
+                <p>Votre plateforme centralisée pour propulser vos projets entrepreneuriaux.</p>
             </div>
             <div class="cards-grid">
                 <div class="action-card" onclick="switchTab('formations')">
                     <i class="fa-solid fa-graduation-cap"></i>
                     <h3>Formations & Réflexion</h3>
-                    <p>Suivez vos modules et consignez vos réflexions entrepreneuriales privées.</p>
+                    <p>Consignez vos réflexions entrepreneuriales privées.</p>
                     <button class="btn-primary">Explorer</button>
                 </div>
                 <div class="action-card" onclick="switchTab('assistant')">
                     <i class="fa-solid fa-brain"></i>
                     <h3>Arkas Assistance IA</h3>
-                    <p>Posez vos questions business 24/7 à votre assistant dédié.</p>
+                    <p>Posez vos questions business 24/7.</p>
                     <button class="btn-primary">Discuter</button>
                 </div>
                 <div class="action-card" onclick="switchTab('communaute')">
                     <i class="fa-solid fa-handshake"></i>
                     <h3>Mentorat & Communauté</h3>
-                    <p>Rejoignez notre groupe WhatsApp et contactez notre service d'assistance.</p>
+                    <p>Rejoignez notre groupe WhatsApp.</p>
                     <button class="btn-primary">Accéder</button>
                 </div>
             </div>
         </section>
 
-        <!-- ONGLET FORMATIONS & REFLEXIONS -->
+        <!-- FORMATIONS -->
         <section id="formations" class="tab-content">
             <h2>Modules de Formation & Réflexions</h2>
-            <p class="section-desc">Progressez pas à pas. Vos réponses aux questions ci-dessous sont enregistrées de façon sécurisée dans votre espace privé.</p>
-            
+            <p class="section-desc">Vos réponses sont enregistrées dans votre espace privé.</p>
             <div class="module-box">
                 <h3>Module 1 : Trouver et Valider son Idée</h3>
                 <div class="question-group">
-                    <label>Quel problème majeur résout votre idée d'entreprise ?</label>
+                    <label>Quel problème majeur résout votre idée ?</label>
                     <textarea id="q1" placeholder="Ex: Difficulté pour les PME locales de trouver des financements..."></textarea>
-                    <button class="btn-save" onclick="saveReflection('q1', 'Problème majeur résolu')"><i class="fa-solid fa-floppy-disk"></i> Enregistrer ma réflexion</button>
+                    <button class="btn-save" onclick="saveReflection('q1', 'Problème majeur résolu')">
+                        <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+                    </button>
                 </div>
                 <div class="question-group">
-                    <label>Qui est votre client idéal (Persona) ?</label>
+                    <label>Qui est votre client idéal ?</label>
                     <textarea id="q2" placeholder="Ex: Propriétaires de boutiques entre 25 et 45 ans..."></textarea>
-                    <button class="btn-save" onclick="saveReflection('q2', 'Client idéal')"><i class="fa-solid fa-floppy-disk"></i> Enregistrer ma réflexion</button>
+                    <button class="btn-save" onclick="saveReflection('q2', 'Client idéal')">
+                        <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- ONGLET ASSISTANT IA -->
+        <!-- ASSISTANT IA -->
         <section id="assistant" class="tab-content">
             <h2>Assistant IA Arkas</h2>
-            <p class="section-desc">Votre conseiller virtuel spécialisé en stratégie et entrepreneuriat.</p>
+            <p class="section-desc">Votre conseiller virtuel en entrepreneuriat.</p>
             <div class="chat-container">
                 <div id="chat-box" class="chat-box">
                     <div class="chat-message bot">
                         <i class="fa-solid fa-robot"></i>
-                        <p>Bonjour ! Je suis l'assistant Arkas. Posez-moi vos questions sur le business plan, le marketing, la gestion ou la recherche de clients.</p>
+                        <p>Bonjour ! Je suis l'assistant Arkas. Posez-moi vos questions sur le business, le marketing, la gestion...</p>
                     </div>
                 </div>
                 <div class="chat-input-area">
-                    <input type="text" id="user-input" placeholder="Posez votre question business ici..." onkeypress="handleChatKey(event)">
-                    <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+                    <input type="text" id="user-input" placeholder="Posez votre question..." onkeypress="handleChatKey(event)">
+                    <button onclick="sendChatMessage()" aria-label="Envoyer"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
         </section>
 
-        <!-- ONGLET BIBLIOTHEQUE -->
+        <!-- BIBLIOTHEQUE -->
         <section id="bibliotheque" class="tab-content">
             <h2>Bibliothèque & Ressources</h2>
-            <p class="section-desc">Téléchargez les documents de travail et guides pratiques.</p>
             <div class="resources-grid">
                 <div class="resource-card">
                     <i class="fa-solid fa-file-pdf pdf-icon"></i>
                     <h3>Modèle de Business Plan</h3>
-                    <p>Guide complet et canevas pour rédiger votre plan d'affaires.</p>
+                    <p>Guide complet pour rédiger votre plan d'affaires.</p>
                     <div class="resource-actions">
                         <a href="#" class="btn-download" download><i class="fa-solid fa-download"></i> Télécharger</a>
-                        <div class="social-interactions">
-                            <button onclick="likeResource('res_bp')"><i class="fa-solid fa-heart"></i> <span id="likes-res_bp">0</span></button>
-                        </div>
+                        <button onclick="likeResource('res_bp')" class="btn-like" aria-label="Aimer">
+                            <i class="fa-solid fa-heart"></i> <span id="likes-res_bp">0</span>
+                        </button>
                     </div>
                     <div class="comments-section">
                         <input type="text" id="comment-res_bp" placeholder="Ajouter un commentaire...">
-                        <button onclick="addComment('res_bp')">Publier</button>
+                        <button onclick="addComment('res_bp')" class="btn-primary">Publier</button>
                         <div id="comments-list-res_bp" class="comments-list"></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ONGLET COMMUNAUTE -->
+        <!-- COMMUNAUTE -->
         <section id="communaute" class="tab-content">
             <h2>Coaching & Communauté</h2>
             <div class="community-box">
                 <i class="fa-brands fa-whatsapp whatsapp-icon"></i>
-                <h3>Rejoignez le groupe WhatsApp officiel</h3>
-                <p>Échangez avec d'autres entrepreneurs, posez vos questions aux coachs et recevez des alertes en direct.</p>
-                <a href="https://chat.whatsapp.com/KMujAS0wQZW8EhXa3i4CPY" target="_blank" class="btn-whatsapp">Rejoindre le groupe</a>
+                <h3>Rejoignez le groupe WhatsApp</h3>
+                <p>Échangez avec d'autres entrepreneurs.</p>
+                <a href="https://chat.whatsapp.com/KMujAS0wQZW8EhXa3i4CPY" target="_blank" class="btn-whatsapp">Rejoindre</a>
             </div>
         </section>
 
-        <!-- ONGLET CARNET DE BORD -->
+        <!-- CARNET -->
         <section id="carnet" class="tab-content">
-            <h2>Carnet de Bord & Tâches</h2>
-            <p class="section-desc">Notez vos idées rapides et actions prioritaires du jour.</p>
+            <h2>Carnet de Bord</h2>
             <div class="note-creator">
-                <textarea id="new-note" placeholder="Nouvelle note rapide ou tâche à accomplir..."></textarea>
-                <button class="btn-primary" onclick="saveNote()">Ajouter au carnet</button>
+                <textarea id="new-note" placeholder="Nouvelle note..."></textarea>
+                <button class="btn-primary" onclick="saveNote()">Ajouter</button>
             </div>
             <div id="notes-list" class="notes-grid"></div>
         </section>
 
     </main>
 
-    <!-- Bouton Flottant Assistant IA -->
-    <div class="floating-ai-btn" onclick="switchTab('assistant')" title="Discuter avec l'IA">
+    <!-- Bouton flottant IA -->
+    <div class="floating-ai-btn" onclick="switchTab('assistant')" title="Discuter avec l'IA" aria-label="Assistant IA">
         <i class="fa-solid fa-robot"></i>
         <span class="pulse-ring"></span>
     </div>
 
+    <!-- Scripts : config.js EN PREMIER, puis app.js -->
+    <script src="config.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
