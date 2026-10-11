@@ -1,5 +1,5 @@
 // ============================================
-// CONFIGURATION SUPABASE (depuis config.js)
+// CONFIGURATION SUPABASE
 // ============================================
 const SUPABASE_URL = window.ARKAS_CONFIG.SUPABASE_URL;
 const SUPABASE_ANON_KEY = window.ARKAS_CONFIG.SUPABASE_ANON_KEY;
@@ -8,7 +8,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 
 // ============================================
-// FONCTION DE SÉCURITÉ (anti-XSS)
+// SÉCURITÉ ANTI-XSS
 // ============================================
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -17,7 +17,7 @@ function escapeHtml(text) {
 }
 
 // ============================================
-// NAVIGATION PAR ONGLETS
+// NAVIGATION
 // ============================================
 document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
@@ -74,20 +74,20 @@ function renderAuthUI() {
 }
 
 async function handleLogin() {
-    const email = document.getElementById('auth-email').value;
+    const email = document.getElementById('auth-email').value.trim();
     const password = document.getElementById('auth-password').value;
     if (!email || !password) return alert("Veuillez remplir l'email et le mot de passe.");
 
     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if (error) alert("Erreur : " + error.message);
     else {
-        alert("Connexion réussie !");
+        alert("✅ Connexion réussie !");
         checkAuth();
     }
 }
 
 async function handleSignup() {
-    const email = document.getElementById('auth-email').value;
+    const email = document.getElementById('auth-email').value.trim();
     const password = document.getElementById('auth-password').value;
     if (!email || !password) return alert("Veuillez remplir l'email et le mot de passe.");
     if (password.length < 6) return alert("Le mot de passe doit contenir au moins 6 caractères.");
@@ -95,7 +95,7 @@ async function handleSignup() {
     const { error } = await supabaseClient.auth.signUp({ email, password });
     if (error) alert("Erreur : " + error.message);
     else {
-        alert("Inscription réussie ! Vérifiez votre email ou connectez-vous.");
+        alert("✅ Inscription réussie ! Vous pouvez vous connecter.");
         checkAuth();
     }
 }
@@ -104,6 +104,51 @@ async function handleLogout() {
     await supabaseClient.auth.signOut();
     currentUser = null;
     renderAuthUI();
+}
+
+// ============================================
+// AUTHENTIFICATION DEPUIS LA PAGE D'ACCUEIL
+// ============================================
+function scrollToAuth() {
+    document.getElementById('auth-section-home').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+    });
+}
+
+async function handleSignupFromHome() {
+    const email = document.getElementById('home-email').value.trim();
+    const password = document.getElementById('home-password').value;
+    
+    if (!email || !password) return alert("Veuillez remplir tous les champs.");
+    if (password.length < 6) return alert("Le mot de passe doit contenir au moins 6 caractères.");
+    
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) {
+        alert("Erreur : " + error.message);
+    } else {
+        alert("✅ Inscription réussie ! Vous pouvez vous connecter.");
+        document.getElementById('home-email').value = '';
+        document.getElementById('home-password').value = '';
+        checkAuth();
+    }
+}
+
+async function handleLoginFromHome() {
+    const email = document.getElementById('home-email').value.trim();
+    const password = document.getElementById('home-password').value;
+    
+    if (!email || !password) return alert("Veuillez remplir tous les champs.");
+    
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+        alert("Erreur : " + error.message);
+    } else {
+        alert("✅ Connexion réussie !");
+        document.getElementById('home-email').value = '';
+        document.getElementById('home-password').value = '';
+        checkAuth();
+    }
 }
 
 // ============================================
@@ -125,25 +170,27 @@ async function saveReflection(fieldId, questionLabel) {
 
     if (error) alert("Erreur : " + error.message);
     else {
-        alert("Réflexion enregistrée !");
+        alert("✅ Réflexion enregistrée !");
         document.getElementById(fieldId).value = '';
     }
 }
 
 // ============================================
-// ASSISTANT IA
+// ASSISTANT IA AVEC GEMINI (via backend Vercel)
 // ============================================
+let chatHistory = [];
+
 function handleChatKey(event) {
     if (event.key === 'Enter') sendChatMessage();
 }
 
-function sendChatMessage() {
+async function sendChatMessage() {
     const input = document.getElementById('user-input');
     const box = document.getElementById('chat-box');
     const text = input.value.trim();
     if (!text) return;
 
-    // Message utilisateur (SÉCURISÉ)
+    // Message utilisateur
     box.innerHTML += `
         <div class="chat-message user">
             <p>${escapeHtml(text)}</p>
@@ -152,22 +199,37 @@ function sendChatMessage() {
     input.value = '';
     box.scrollTop = box.scrollHeight;
 
-    // Réponse contextuelle
-    setTimeout(() => {
-        const lower = text.toLowerCase();
-        let reply = "C'est un point stratégique important. Je vous conseille de découper cet objectif en actions simples et mesurables.";
+    // Indicateur de réflexion
+    const typingId = 'typing-' + Date.now();
+    box.innerHTML += `
+        <div class="chat-message bot" id="${typingId}">
+            <i class="fa-solid fa-robot"></i>
+            <p><i class="fa-solid fa-ellipsis fa-fade"></i> Réflexion en cours...</p>
+        </div>
+    `;
+    box.scrollTop = box.scrollHeight;
 
-        if (lower.includes('bonjour') || lower.includes('salut') || lower.includes('coucou')) {
-            reply = "Bonjour ! Ravi de vous accompagner. Quel est votre projet ou votre défi du moment ?";
-        } else if (lower.includes('client') || lower.includes('vente') || lower.includes('marche') || lower.includes('prospect')) {
-            reply = "Pour convaincre vos clients, concentrez-vous sur le bénéfice direct. Interrogez 5 clients potentiels pour comprendre leurs blocages.";
-        } else if (lower.includes('argent') || lower.includes('financement') || lower.includes('capital') || lower.includes('fonds')) {
-            reply = "Privilégiez le bootstrapping au début. Préparez ensuite un pitch deck solide pour les investisseurs.";
-        } else if (lower.includes('idee') || lower.includes('projet') || lower.includes('lancer')) {
-            reply = "Assurez-vous que votre idée résout un problème douloureux pour lequel les gens sont prêts à payer.";
-        } else if (lower.includes('merci')) {
-            reply = "Avec grand plaisir ! N'hésitez pas si vous avez d'autres questions.";
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: text,
+                history: chatHistory.slice(-10)
+            })
+        });
+
+        const data = await response.json();
+        document.getElementById(typingId)?.remove();
+
+        if (!response.ok) {
+            throw new Error(data.details || data.error || 'Erreur inconnue');
         }
+
+        const reply = data.reply || "Désolé, je n'ai pas pu répondre.";
+
+        chatHistory.push({ role: 'user', text: text });
+        chatHistory.push({ role: 'model', text: reply });
 
         box.innerHTML += `
             <div class="chat-message bot">
@@ -176,7 +238,19 @@ function sendChatMessage() {
             </div>
         `;
         box.scrollTop = box.scrollHeight;
-    }, 700);
+
+    } catch (error) {
+        console.error('Erreur chat:', error);
+        document.getElementById(typingId)?.remove();
+        
+        box.innerHTML += `
+            <div class="chat-message bot">
+                <i class="fa-solid fa-robot"></i>
+                <p>❌ Erreur de connexion à l'IA.<br><small>${escapeHtml(error.message)}</small></p>
+            </div>
+        `;
+        box.scrollTop = box.scrollHeight;
+    }
 }
 
 // ============================================
@@ -239,15 +313,22 @@ async function loadComments(resourceId) {
 }
 
 // ============================================
-// CARNET DE BORD (localStorage)
+// CARNET DE BORD
 // ============================================
 function saveNote() {
     const input = document.getElementById('new-note');
     const text = input.value.trim();
-    if (!text) return;
+    if (!text) {
+        alert("Veuillez écrire quelque chose avant d'ajouter.");
+        return;
+    }
 
     const notes = JSON.parse(localStorage.getItem('arkas_notes') || '[]');
-    notes.push({ text, date: new Date().toISOString() });
+    notes.unshift({ 
+        id: Date.now(),
+        text: text, 
+        date: new Date().toISOString() 
+    });
     localStorage.setItem('arkas_notes', JSON.stringify(notes));
     input.value = '';
     renderNotes();
@@ -255,10 +336,34 @@ function saveNote() {
 
 function renderNotes() {
     const container = document.getElementById('notes-list');
+    const emptyState = document.getElementById('empty-notes');
     const notes = JSON.parse(localStorage.getItem('arkas_notes') || '[]');
-    container.innerHTML = notes.map(n =>
-        `<div class="note-card">${escapeHtml(n.text)}</div>`
-    ).join('');
+    
+    if (notes.length === 0) {
+        container.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+    }
+    
+    if (emptyState) emptyState.style.display = 'none';
+    
+    container.innerHTML = notes.map(note => `
+        <div class="note-card">
+            <span class="note-text">${escapeHtml(note.text)}</span>
+            <button class="note-delete" onclick="deleteNote(${note.id})" title="Supprimer">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function deleteNote(noteId) {
+    if (!confirm("Supprimer cette note ?")) return;
+    
+    let notes = JSON.parse(localStorage.getItem('arkas_notes') || '[]');
+    notes = notes.filter(n => n.id !== noteId);
+    localStorage.setItem('arkas_notes', JSON.stringify(notes));
+    renderNotes();
 }
 
 // ============================================
