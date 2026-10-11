@@ -7,21 +7,28 @@ const supabaseClient = (window.supabase && SUPABASE_URL)
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
     : null;
 
-// Fonction pour enregistrer le score dans Supabase
-async function saveQuizScoreToSupabase(scoreTotal) {
+// Fonction pour enregistrer la réflexion personnelle en privé dans Supabase
+async function saveReflectionToSupabase(questionText, answerText) {
     if (!supabaseClient) {
         console.log("Supabase n'est pas initialisé.");
+        alert("Réponse enregistrée localement (mode simulation).");
         return;
     }
 
     const { data, error } = await supabaseClient
-        .from('quiz_scores')
-        .insert([{ score: scoreTotal, created_at: new Date() }]);
+        .from('user_reflections')
+        .insert([{ 
+            question: questionText, 
+            answer: answerText, 
+            created_at: new Date() 
+        }]);
 
     if (error) {
         console.error("Erreur lors de l'enregistrement dans Supabase :", error.message);
+        alert("Erreur lors de l'enregistrement privé.");
     } else {
-        console.log("Score enregistré avec succès dans Supabase !", data);
+        console.log("Réponse enregistrée avec succès en privé !", data);
+        alert("Votre réflexion a été enregistrée en toute confidentialité !");
     }
 }
 
@@ -71,75 +78,61 @@ function handleKeyPress(event) {
     }
 }
 
-// --- GESTION DES QUIZ ---
-const quizData = [
+// --- GESTION DES QUESTIONS DE RÉFLEXION PERSONNELLE ---
+const reflectionData = [
     {
-        question: "Quelle est la première étape essentielle pour lancer un projet entrepreneurial solide ?",
-        options: [
-            "Acheter un local commercial immédiatement",
-            "Identifier un vrai problème client et analyser le marché",
-            "Embaucher une grande équipe sans plan"
-        ],
-        correct: 1
+        question: "Quel problème majeur du marché votre entreprise résout-elle concrètement pour vos futurs clients ?"
     },
     {
-        question: "À quoi sert principalement le tableau de bord analytique sur Arkas ?",
-        options: [
-            "À suivre la progression des modules et la réussite des quiz",
-            "À jouer à des jeux vidéo",
-            "À modifier le code source du site"
-        ],
-        correct: 0
+        question: "Quelles sont les trois prochaines actions prioritaires que vous devez mener cette semaine pour avancer ?"
     }
 ];
 
-let currentQuestion = 0;
-let score = 0;
+let currentReflectionIndex = 0;
 
-function startQuiz() {
+function startReflection() {
     document.getElementById('formation-menu').style.display = 'none';
-    document.getElementById('quiz-box').style.display = 'block';
-    currentQuestion = 0;
-    score = 0;
-    loadQuestion();
+    document.getElementById('reflection-box').style.display = 'block';
+    currentReflectionIndex = 0;
+    loadReflectionQuestion();
 }
 
-function loadQuestion() {
-    if (currentQuestion < quizData.length) {
-        const q = quizData[currentQuestion];
-        document.getElementById('quiz-title').textContent = `Quiz - Question ${currentQuestion + 1} sur ${quizData.length}`;
-        document.getElementById('quiz-question').textContent = q.question;
-        
-        const optionsContainer = document.getElementById('quiz-options');
-        optionsContainer.innerHTML = '';
-        
-        q.options.forEach((opt, index) => {
-            const btn = document.createElement('button');
-            btn.textContent = opt;
-            btn.onclick = () => selectAnswer(index);
-            optionsContainer.appendChild(btn);
-        });
+function loadReflectionQuestion() {
+    if (currentReflectionIndex < reflectionData.length) {
+        const q = reflectionData[currentReflectionIndex];
+        document.getElementById('reflection-title').textContent = `Réflexion - Question ${currentReflectionIndex + 1} sur ${reflectionData.length}`;
+        document.getElementById('reflection-question').textContent = q.question;
+        document.getElementById('reflection-input').value = '';
     } else {
-        document.getElementById('quiz-title').textContent = "Résultat du Quiz 🎯";
-        document.getElementById('quiz-question').textContent = `Vous avez terminé le quiz avec un score de ${score} / ${quizData.length} !`;
-        document.getElementById('quiz-options').innerHTML = "<p style='color:#818cf8;'>Félicitations pour votre progression entrepreneuriale !</p>";
-        document.getElementById('quiz-back').style.display = 'inline-block';
-        
-        // Enregistrement automatique du score dans Supabase
-        saveQuizScoreToSupabase(score);
+        document.getElementById('reflection-title').textContent = "Exercice Terminé 🎯";
+        document.getElementById('reflection-question').textContent = "Vous avez complété toutes les questions de réflexion pour ce module.";
+        document.getElementById('reflection-input').style.display = 'none';
+        document.querySelector('#reflection-box button').style.display = 'none';
+        document.getElementById('reflection-back').style.display = 'inline-block';
     }
 }
 
-function selectAnswer(selectedIndex) {
-    if (selectedIndex === quizData[currentQuestion].correct) {
-        score++;
+function saveReflectionAnswer() {
+    const answerText = document.getElementById('reflection-input').value.trim();
+    if (answerText === '') {
+        alert("Veuillez écrire une réponse avant d'enregistrer.");
+        return;
     }
-    currentQuestion++;
-    loadQuestion();
+
+    const currentQ = reflectionData[currentReflectionIndex].question;
+    
+    // Enregistrement privé dans Supabase
+    saveReflectionToSupabase(currentQ, answerText);
+
+    // Passer à la question suivante
+    currentReflectionIndex++;
+    loadReflectionQuestion();
 }
 
 function resetFormations() {
-    document.getElementById('quiz-box').style.display = 'none';
+    document.getElementById('reflection-box').style.display = 'none';
     document.getElementById('formation-menu').style.display = 'grid';
-    document.getElementById('quiz-back').style.display = 'none';
+    document.getElementById('reflection-back').style.display = 'none';
+    document.getElementById('reflection-input').style.display = 'block';
+    document.querySelector('#reflection-box button').style.display = 'inline-block';
 }
